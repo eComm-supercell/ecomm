@@ -1,0 +1,124 @@
+version: '3'
+services:
+  auth:
+    container_name: auth
+    build:
+      context: .
+      dockerfile: Dockerfile.auth
+      target: build
+    restart: on-failure
+    ports:
+      - 4000:4000
+    volumes:
+      - .:/app
+      - exclude:/app/node_modules/
+    command: npm run start:prod:auth
+    depends_on:
+      - postgres
+      - redis
+      - meilisearch
+    networks:
+      - web
+  customers:
+    container_name: customers
+    build:
+      context: .
+      dockerfile: Dockerfile.customers
+      target: production
+    restart: on-failure
+    ports:
+      - 3001:3001
+    volumes:
+      - .:/app
+      - exclude:/app/node_modules/
+    command: npm run start:prod:customers
+    depends_on:
+      - postgres
+      - redis
+      - meilisearch
+      - auth
+    networks:
+      - web
+  platform:
+    container_name: platform
+    build:
+      context: .
+      dockerfile: Dockerfile.platform
+      target: build
+    restart: on-failure
+    ports:
+      - 3000:3000
+    volumes:
+      - .:/app
+      - exclude:/app/node_modules/
+    command: bash -c "dotenv -e .env.prod -- npx prisma migrate deploy
+      && dotenv -e .env.prod -- npx prisma db seed && npm run start:prod:platform"
+
+    depends_on:
+      - postgres
+      - redis
+      - meilisearch
+      - auth
+    networks:
+      - web
+  admins:
+    container_name: admins
+    build:
+      context: .
+      dockerfile: Dockerfile.admins
+      target: production
+    restart: on-failure
+    ports:
+      - 3002:3002
+    volumes:
+      - .:/app
+      - exclude:/app/node_modules/
+    command: npm run start:prod:admins
+    depends_on:
+      - postgres
+      - redis
+      - meilisearch
+      - auth
+    networks:
+      - web
+  postgres:
+    build:
+      context: .
+      dockerfile: Dockerfile.postgresql
+    container_name: postgres
+    command: ['-p', '5433']
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: always
+    networks:
+      - web
+  redis:
+    image: redis:latest
+    container_name: redis
+    command: --port 6378
+    networks:
+      - web
+  meilisearch:
+    image: getmeili/meilisearch:v1.2
+    container_name: meilisearch
+    environment:
+      - http_proxy
+      - https_proxy
+      - MEILI_MASTER_KEY=${MEILI_MASTER_KEY:-masterKeyForProduction}
+      - MEILI_NO_ANALYTICS=${MEILI_NO_ANALYTICS:-false}
+      - MEILI_ENV=${MEILI_ENV:-production}
+      - MEILI_LOG_LEVEL
+      - MEILI_DB_PATH=${MEILI_DB_PATH:-/data.ms}
+    ports:
+      - ${MEILI_PORT:-7700}:7700
+    networks:
+      - web
+    volumes:
+      - ./data.ms:/data.ms
+    restart: always
+networks:
+  web:
+volumes:
+  pgdata:
+  exclude:
+    driver: local

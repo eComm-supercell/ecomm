@@ -1,0 +1,13 @@
+# Use the official PostgreSQL image as the base image
+FROM postgres:latest
+
+# Create a custom PostgreSQL data directory
+ENV PGDATA /var/lib/postgresql/data_custom
+
+# Create a custom PostgreSQL user and database
+ENV POSTGRES_USER postgres
+ENV POSTGRES_PASSWORD 123
+ENV POSTGRES_DB nestjs
+
+# Expose PostgreSQL port for local connections
+EXPOSE 5433

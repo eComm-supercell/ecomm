@@ -1,0 +1,27 @@
+FROM node:18 as build
+WORKDIR /usr/src/app
+RUN corepack enable
+COPY package.json .
+COPY yarn.lock .
+RUN yarn install
+COPY . .
+RUN yarn global add dotenv-cli 
+RUN dotenv -e .env.prod -- npx prisma generate
+RUN yarn build common
+RUN yarn build platform
+
+FROM build as production
+WORKDIR /usr/src/app
+COPY --chown=node:node --from=build /usr/src/app/dist ./dist
+COPY --chown=node:node --from=build /usr/src/app/.env.prod .env.prod
+COPY --chown=node:node --from=build /usr/src/app/.env.prod .env
+COPY --chown=node:node --from=build /usr/src/app/package.json .
+COPY --chown=node:node --from=build /usr/src/app/yarn.lock .
+RUN yarn install --production
+COPY --chown=node:node --from=build /usr/src/app/node_modules/.prisma/client  ./node_modules/.prisma/client
+
+ENV NODE_ENV production
+EXPOSE 3000
+CMD ["node", "dist/apps/platform/main"]
+# SEE for inspiration: https://hackernoon.com/5-steps-for-dockerizing-nestjs-with-prisma
+
