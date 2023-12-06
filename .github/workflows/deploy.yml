@@ -1,8 +1,8 @@
-name: Linode Server Deployment
+name: CI/CD
 
 on:
   push:
-    branches: [dev]
+    branches: [main]
 
 jobs:
   build:
