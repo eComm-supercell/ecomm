@@ -9,7 +9,9 @@ async function bootstrap() {
   const configService = app.get<ConfigService>(ConfigService);
   const config = new DocumentBuilder()
     .setTitle('Shops API')
-    .setDescription('The Shop API description')
+    .setDescription(
+      'Shops API description. The API prefix is "shops-api", Hence always use "shops-api" as prefix for all the endpoints.',
+    )
     .setVersion('1.0')
     .addTag('Authentication')
     .build();
