@@ -11,6 +11,7 @@ import { AuditLogModule } from './audit-log/audit-log.module';
 import { SystemConfigModule } from './system-config/system-config.module';
 import { ProvinceModule } from './province/province.module';
 import { MobileAppConfigModule } from './mobile-app-config/mobile-app-config.module';
+import { AdminAuthenticationModule } from './auth/authentication.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { MobileAppConfigModule } from './mobile-app-config/mobile-app-config.mod
           : path.join(process.cwd(), '.env.prod'),
       ],
     }),
+    AdminAuthenticationModule,
     CategoryModule,
     CityModule,
     ApiKeyModule,

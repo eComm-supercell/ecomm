@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateProfileDto } from './dto/create-profile.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { PrismaService } from '@libs/common/src/prisma/prisma.service';
-import { User } from '@prisma/client';
+import { OldUser } from '@prisma/client';
 import { ProfileEntity } from './entity/profile.entity';
 
 @Injectable()
@@ -18,7 +18,7 @@ export class ProfileService {
     addressId: true,
   };
   async create(
-    user: User,
+    user: OldUser,
     createProfileDto: CreateProfileDto,
   ): Promise<ProfileEntity> {
     const record = await this.prisma.profile.create({

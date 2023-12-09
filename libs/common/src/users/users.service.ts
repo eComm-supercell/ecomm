@@ -55,7 +55,7 @@ export class UsersService {
    */
   async createAdminAccount(data: LocalAuthSignupDto) {
     // Create user
-    const response = await this.prisma.user.create({
+    const response = await this.prisma.oldUser.create({
       data: {
         // Empty wallet and profile
         wallet: {
@@ -93,7 +93,7 @@ export class UsersService {
     const { uid, email, phoneNumber } = firebaseUser;
 
     // Add user to system database
-    const response = await this.prisma.user.create({
+    const response = await this.prisma.oldUser.create({
       data: {
         // Empty wallet and profile
         wallet: {
@@ -147,7 +147,7 @@ export class UsersService {
       }
 
       // find user in system database
-      const userExist = await this.prisma.user.findUnique({
+      const userExist = await this.prisma.oldUser.findUnique({
         where: { email: user.email || undefined },
       });
       if (userExist) {
@@ -170,7 +170,7 @@ export class UsersService {
       }
 
       // Add user to system database if not exist
-      const response = await this.prisma.user.create({
+      const response = await this.prisma.oldUser.create({
         data: {
           // Empty wallet and profile
           wallet: {
@@ -210,7 +210,7 @@ export class UsersService {
 
   findOne(id: number) {
     // TODO: add DB view to get user profile
-    return this.prisma.user.findUnique({
+    return this.prisma.oldUser.findUnique({
       where: { id },
       select: {
         id: true,
@@ -237,7 +237,7 @@ export class UsersService {
    *
    */
   async findLocalUserByUsername(username: string) {
-    return await this.prisma.user.findUnique({
+    return await this.prisma.oldUser.findUnique({
       where: { username },
       select: this.localUserSelectFields,
     });
@@ -259,7 +259,7 @@ export class UsersService {
    *
    */
   async findCustomerByPhone(phone: string) {
-    return await this.prisma.user.findUnique({
+    return await this.prisma.oldUser.findUnique({
       where: { username: phone },
     });
   }

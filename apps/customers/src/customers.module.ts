@@ -10,9 +10,11 @@ import { PrismaModule } from '@libs/common/src/prisma/prisma.module';
 import { ConfigModule } from '@nestjs/config';
 import path from 'path';
 import { SharedAuthModule } from '@libs/common/src/auth/sharedAuth.module';
+import { CustomersAuthenticationModule } from './auth/authentication.module';
 
 @Module({
   imports: [
+    CustomersAuthenticationModule,
     ProductsModule,
     CartModule,
     OrdersModule,

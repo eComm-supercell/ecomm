@@ -106,3 +106,546 @@ model user_roles_role {
   @@index([roleId])
   @@index([userId])
 }
+
+// OLD db reference starts here
+model Profile {
+  id          Int       @id @default(autoincrement())
+  dateOfBirth DateTime?
+  mobile      String?
+  gender      String?
+  addressId   Int?
+  address     Address[]
+  user        OldUser   @relation(fields: [userId], references: [id])
+  userId      Int       @unique
+}
+
+model OldUser {
+  id              Int       @id @default(autoincrement())
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @default(now())
+  emailVerifiedAt DateTime?
+
+  email    String?  @unique
+  username String?  @unique
+  lname    String?
+  fname    String?
+  password String?
+  profile  Profile?
+
+  // values: google, facebook
+  provider     String?
+  // google id, or facebook id here
+  providerId   String?
+  rewardPoints Int?    @default(0)
+
+  role               String?             @default("customer")
+  orders             Order[]
+  products           Product[]
+  carts              cart[]
+  shops              Shop[]
+  categorys          Category[]
+  shopId             Int?
+  deliveryBoy        DeliveryBoy?        @relation(fields: [deliveryBoyId], references: [id])
+  deliveryBoyId      Int?                @unique
+  wallet             Wallet              @relation(fields: [walletId], references: [id])
+  walletId           Int                 @unique
+  notifications      Notification[]
+  notificationTokens NotificationToken[]
+  coupons            Coupon[]
+}
+
+model DeliveryBoy {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+
+  name           String?
+  email          String?
+  mobile         String?
+  status         String?   @default("active") // active, inactive, suspended
+  suspendReason  String?
+  suspendDate    DateTime?
+  depitThreshold Decimal?
+  user           OldUser?
+  userId         Int?      @unique
+}
+
+model Wallet {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+
+  amount            Decimal             @default(0)
+  user              OldUser?
+  walletTransaction WalletTransaction[]
+}
+
+model WalletTransaction {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+
+  amount   Decimal?
+  wallet   Wallet?  @relation(fields: [walletId], references: [id], onDelete: Cascade)
+  walletId Int?
+}
+
+// table ucode for password recovery
+model Ucode {
+  id          Int       @id @default(autoincrement())
+  code        String    @unique
+  email       String
+  dateExpired DateTime?
+}
+
+model City {
+  id           Int           @id @default(autoincrement())
+  name         String
+  deleviryFee  Decimal?
+  deleviryTime Int?
+  provinceId   Int?
+  province     Province?     @relation(fields: [provinceId], references: [id])
+  address      Address[]
+  ShopDetails  ShopDetails[]
+}
+
+model Province {
+  id           Int           @id @default(autoincrement())
+  name         String        @unique
+  deleviryFee  Decimal
+  deleviryTime Int
+  address      Address[]
+  city         City[]
+  ShopDetails  ShopDetails[]
+}
+
+model Address {
+  id          Int      @id @default(autoincrement())
+  street      String?
+  cityId      Int?
+  city        City?    @relation(fields: [cityId], references: [id])
+  provinceId  Int
+  province    Province @relation(fields: [provinceId], references: [id])
+  order       Order[]
+  latitude    Float?
+  longitude   Float?
+  buildingNo  String?
+  floorNo     String?
+  apartmentNo String?
+  profile     Profile  @relation(fields: [profileId], references: [id])
+  profileId   Int      @unique
+}
+
+model Category {
+  id           Int       @id @default(autoincrement())
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @default(now())
+  parentId     Int?
+  categoryLink String?
+  sortOrder    Int       @default(0)
+  author       OldUser?  @relation(fields: [authorId], references: [id])
+  authorId     Int?
+  published    Boolean   @default(false)
+  name         String    @db.VarChar(255)
+  slug         String    @db.VarChar(255)
+  products     Product[]
+}
+
+model Tag {
+  id        Int       @id @default(autoincrement())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now())
+  title     String    @unique
+  slug      String    @unique
+  products  Product[]
+}
+
+model Product {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+
+  sku     String
+  barCode String?
+
+  // optionSet   OptionSet? @relation(fields: [optionSetId], references: [id])
+  // optionSetId Int?
+
+  name String  @db.VarChar(255)
+  slug String? @db.VarChar(255)
+
+  // SEO
+  metaTitle       String? @db.Text
+  metaDescription String? @db.Text // max limit 320
+  metaKeyword     String? @db.Text
+
+  defaultVariant           Int        @default(0)
+  isSale                   Boolean    @default(false)
+  price                    Decimal
+  quantity                 Int        @default(0)
+  isWholeSale              Boolean    @default(false)
+  trackQuantity            Boolean    @default(true)
+  allowOutOfStockPurchases Boolean    @default(false)
+  brand                    String?    @db.VarChar(255)
+  description              String?    @db.Text
+  published                Boolean    @default(true)
+  author                   OldUser    @relation(fields: [authorId], references: [id])
+  authorId                 Int
+  shopId                   Int?
+  shop                     Shop?      @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  availableFrom            DateTime?
+  availableTo              DateTime?
+  isFeatured               Boolean    @default(false)
+  isBestSeller             Boolean    @default(false)
+  isTopRated               Boolean    @default(false)
+  isSpecialOffer           Boolean    @default(false)
+  isAvliable               Boolean    @default(true)
+  categories               Category[]
+
+  keywords        String[]
+  orderItems      OrderItem[]
+  productImages   ProductImage[]
+  carts           cart[]
+  subOrderItems   SubOrderItem[]
+  tags            Tag[]
+  productVariants ProductVariant[]
+  inventoryLogs   InventoryLog[]
+  //wholesalePrices wholesalePrice[]
+}
+
+// model wholesalePrice {
+//   id        Int      @id @default(autoincrement())
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @default(now())
+//   //productId Int?
+//   //product   Product? @relation(fields: [productId], references: [id], onDelete: Cascade)
+//   price     Decimal?
+//   quantity  Int?
+// }
+
+model InventoryLog {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+
+  productId        Int?
+  product          Product?        @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productvariantId Int?
+  productvariant   ProductVariant? @relation(fields: [productvariantId], references: [id], onDelete: Cascade)
+
+  quantity Int?
+  status   String? // 
+}
+
+model ProductVariant {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+
+  productId Int?
+  product   Product? @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  price               Decimal?
+  discount            Decimal?
+  quantity            Int?
+  sku                 String?
+  barcode             String?
+  status              Int?                  @default(0)
+  sortOrder           Int?                  @default(0)
+  productVariantImage ProductVariantImage[]
+  inventoryLogs       InventoryLog[]
+}
+
+model ProductImage {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+
+  orginal   String?
+  thumbnail String?
+  medium    String?
+  large     String?
+
+  product    Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId  Int
+  isOptmized Boolean @default(false)
+  sortOrder  Int     @default(0)
+}
+
+model ProductVariantImage {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+
+  orginal          String?
+  thumbnail        String?
+  medium           String?
+  large            String?
+  altText          String?
+  productVariant   ProductVariant @relation(fields: [productVariantId], references: [id], onDelete: Cascade)
+  productVariantId Int
+  isOptmized       Boolean        @default(false)
+
+  sortOrder Int @default(0)
+}
+
+// OldUser can create own shop to selling products
+model Shop {
+  id          Int       @id @default(autoincrement())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @default(now())
+  mangers     OldUser[]
+  shopType    ShopType  @default(retaile)
+  openTime    String    @default("00:00")
+  closeTime   String    @default("23:59")
+  daysOff     DaysOff[] @default([])
+  canPreOrder Boolean   @default(false)
+
+  status ShopStatus @default(pending)
+
+  order         Order[]
+  shopDetails   ShopDetails @relation(fields: [shopDetailsId], references: [id])
+  shopDetailsId Int         @unique
+  products      Product[]
+}
+
+enum ShopStatus {
+  pending
+  approved
+  banned
+  closed
+  active
+  paused
+  busy
+}
+
+enum ShopType {
+  retaile
+  wholesale
+  restaurant
+  small_business
+}
+
+enum DaysOff {
+  sunday
+  monday
+  tuesday
+  wednesday
+  thursday
+  friday
+  saturday
+}
+
+// contains shop details
+model ShopDetails {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+
+  displayName String
+  name        String
+  phone       String
+  email       String
+  description String   @db.Text
+  logo        String
+  shopId      Int?     @unique
+  latitute    Float
+  longitute   Float
+  cityId      Int
+  city        City     @relation(fields: [cityId], references: [id])
+  provinceId  Int
+  province    Province @relation(fields: [provinceId], references: [id])
+  shop        Shop?
+}
+
+// user order details
+model Order {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+
+  orderId      String  @unique
+  orderItemId  String
+  price        Decimal
+  delivery_fee String?
+  discount     String?
+  total        String
+
+  // /**
+  // * available value:
+  // * COD, ONLINE_PAYMENT
+  // */
+  paymentMode   String
+  // /**
+  // * available value:
+  // * NOT_PAID, PAID
+  // */
+  paymentStatus String
+
+  // /**
+  // * available value:
+  // *
+  // * 'order_placed',
+  // * 'order_confirmed',
+  // * 'order_picked',
+  // * 'order_on_way',
+  // * 'order_delivered',
+  // * 'order_returned',
+  // * 'order_cancelled',
+  // * 'order_paused'
+  // */
+  status    String?
+  comment   String?  @db.Text
+  addressId Int?
+  address   Address? @relation(fields: [addressId], references: [id])
+
+  user             OldUser?        @relation(fields: [userId], references: [id])
+  userId           Int?
+  OrderItem        OrderItem[]
+  paymentDetails   PaymentDetails? @relation(fields: [paymentDetailsId], references: [id])
+  paymentDetailsId Int?
+  Shop             Shop?           @relation(fields: [shopId], references: [id])
+  shopId           Int?
+}
+
+// Order item
+model OrderItem {
+  id          Int      @id @default(autoincrement())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now())
+  quantity    Int
+  price       Decimal
+  orderItemId String
+  product     Product? @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId   Int
+  order       Order?   @relation(fields: [orderId], references: [orderId], onDelete: Cascade)
+  orderId     String
+  shopOrderId Int?
+}
+
+// suborder item for seller order
+model SubOrderItem {
+  id         Int      @id @default(autoincrement())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now())
+  quantity   Int
+  price      Decimal
+  subOrderId Int?
+  product    Product? @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId  Int
+}
+
+// payment details attach with order details
+model PaymentDetails {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+  orderId   Int
+  amount    Int
+  provider  String?
+  status    String?
+  order     Order[]
+}
+
+model cart {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+  quantity  Int
+  product   Product? @relation(fields: [productId], references: [id])
+  productId Int
+  user      OldUser? @relation(fields: [userId], references: [id])
+  userId    Int
+}
+
+model ApiKey {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+  key       String   @unique
+}
+
+model SystemConfig {
+  id                 Int             @id @default(autoincrement())
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @default(now())
+  startHour          String
+  endHour            String
+  pricePerKm         Decimal
+  minOrderAmount     Decimal
+  forceClose         Boolean         @default(false)
+  allowGuestCheckout Boolean         @default(false)
+  appConfig          MobileAppConfig @relation(fields: [mobileAppConfigId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  mobileAppConfigId  Int
+  forceCloseMessage  String
+}
+
+model MobileAppConfig {
+  id              Int      @id @default(autoincrement())
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @default(now())
+  retailLayout    Json     @default("{}")
+  resturantLayout Json     @default("{}")
+  appConfig       Json     @default("{}")
+
+  appVersion String
+
+  systemConfig SystemConfig[]
+}
+
+model Notification {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+  title     String
+  body      String
+  type      String
+  userId    Int
+  user      OldUser  @relation(fields: [userId], references: [id])
+  isRead    Boolean  @default(false)
+  isDeleted Boolean  @default(false)
+}
+
+model NotificationToken {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+  token     String
+  userId    Int
+  user      OldUser  @relation(fields: [userId], references: [id])
+}
+
+model AuditLog {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  action    String
+  entity    String
+  entityId  Int
+  query     String
+  userId    Int
+}
+
+model Coupon {
+  id             Int       @id @default(autoincrement())
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @default(now())
+  code           String    @unique
+  type           String // percentage, fixed
+  isReferral     Boolean   @default(false)
+  referrer       OldUser?  @relation(fields: [referrerId], references: [id])
+  referrerId     Int?
+  value          Float?
+  maxDiscount    Float?
+  minOrderAmount Float?
+  maxUsage       Int?
+  usageCount     Int?
+  applyFor       String? // all, category, product, shop
+  categoryId     Int?
+  productId      Int?
+  shopId         Int?
+  startDate      DateTime?
+  endDate        DateTime?
+
+  isActive  Boolean @default(true)
+  isDeleted Boolean @default(false)
+}
