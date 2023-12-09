@@ -45,7 +45,7 @@ export class AuthController {
   /**
    * Create new Customer account. After succesfull signIn from firebase, this method will be called to create new customer account. Once provided with account UID taken from firebase, Server will first check if user already exist in database. If user already exist, it will return user data. If user not exist, it will create new user and return user data.
    */
-  @Post('/customer/phone/signup')
+  @Post('/phone/signup')
   @apiExceptionResponse()
   @ApiCreatedResponse({
     type: OmitType(LocalAuthResponseDto, ['token']),
@@ -63,7 +63,7 @@ export class AuthController {
     type: LocalAuthResponseDto,
   })
   @apiExceptionResponse()
-  @Post('/customer/phone/login')
+  @Post('/phone/login')
   customerLogin(@Request() req: any) {
     return req.user;
   }
@@ -74,7 +74,7 @@ export class AuthController {
    * If the user is not registered, the user will be registered and the user data will be returned also with the system JWT token.
    *
    */
-  @Post('/customer/idp/signin')
+  @Post('/idp/signin')
   @apiExceptionResponse()
   @ApiCreatedResponse({
     type: LocalAuthResponseDto,
@@ -89,7 +89,7 @@ export class AuthController {
    *
    *
    */
-  @Get('/customer/apple/nonce')
+  @Get('/apple/nonce')
   @ApiOkResponse({
     type: String,
   })

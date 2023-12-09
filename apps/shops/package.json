@@ -1,0 +1,21 @@
+{
+  "dependencies": {
+    "@nestjs/mapped-types": "*"
+  },
+  "name": "shops",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "start": "nest start shops",
+    "build": "nest build shops",
+    "start:dev": "NODE_ENV=development nest start shops --watch",
+    "start:debug": "NODE_ENV=development nest start shops --debug --watch"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

@@ -8,14 +8,16 @@ async function bootstrap() {
   // Config service
   const configService = app.get<ConfigService>(ConfigService);
   const config = new DocumentBuilder()
-    .setTitle('Customers API')
-    .setDescription('The Customers API description')
+    .setTitle('Shops API')
+    .setDescription('The Shop API description')
     .setVersion('1.0')
-    .addTag('Customers')
+    .addTag('Authentication')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
-  await app.listen(configService.get('CUSTOMERS_PORT') || 3001);
+  app.setGlobalPrefix('shops-api');
+
+  await app.listen(configService.get('SHOPS_PORT') || 3001);
 }
 void bootstrap();
