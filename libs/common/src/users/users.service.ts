@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import * as argon2 from 'argon2';
 import { PrismaService } from '@libs/common/src/prisma/prisma.service';
-import { LocalAuthSignupDto } from './dto/local-startegy/user-signup.dto';
+import { LocalAuthSignupDto } from '../auth/dto/customers/local-startegy/user-signup.dto';
 import {
   CustomerIdpSignupDto,
   CustomersSignupDto,
-} from './dto/customers-local-startegy/signup.dto';
+} from '../auth/dto/customers/customers-native-startegy/signup.dto';
 import Role from '@libs/common/src/enums/role.enum';
 import IdentityProviders from '@libs/common/src/enums/provider.enum';
 import { FirebaseService } from '@libs/common/src/firebase/firebase.service';
@@ -49,6 +49,7 @@ export class UsersService {
       },
     },
   };
+
   /**
    * Create Admin account (Local Strategy) using usernmae and password
    *
@@ -246,21 +247,6 @@ export class UsersService {
     return await this.prisma.user.findUnique({
       where: { id },
       select: this.localUserSelectFields,
-    });
-  }
-
-  /**
-   * Customers (Phone Numbers as username)
-   *
-   */
-
-  /**
-   *
-   *
-   */
-  async findCustomerByPhone(phone: string) {
-    return await this.prisma.oldUser.findUnique({
-      where: { username: phone },
     });
   }
 }

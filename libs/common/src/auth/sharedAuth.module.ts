@@ -4,8 +4,10 @@ import { UsersModule } from '../users/users.module';
 import { JwtModule } from '@nestjs/jwt';
 import { LocalStrategy } from './strategy/local.strategy';
 import { JwtStrategy } from './strategy/jwt.strategy';
-import { CustomersPhoneStrategy } from './strategy/customers-phone.strategy';
+import { CustomersPhoneStrategy } from './strategy/customers/customers-phone.strategy';
 import { JwtQueryStrategy } from './strategy/jwtquery.strategy';
+import { PrismaModule } from '../prisma/prisma.module';
+import { CustomersNativeStrategy } from './strategy/customers/customers-native.strategy';
 
 @Global()
 @Module({
@@ -15,13 +17,15 @@ import { JwtQueryStrategy } from './strategy/jwtquery.strategy';
       secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: '1h' },
     }),
+    PrismaModule,
   ],
   providers: [
     SharedAuthService,
     LocalStrategy,
     JwtStrategy,
-    CustomersPhoneStrategy,
     JwtQueryStrategy,
+    CustomersPhoneStrategy,
+    CustomersNativeStrategy,
   ],
   exports: [SharedAuthService, JwtModule],
 })

@@ -3,7 +3,9 @@ import { Injectable } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
 @Injectable()
-export class CustomersPhoneAuthGuard extends AuthGuard(AuthStrategy.CUSTOMERS) {
+export class CustomersNativeAuthGuard extends AuthGuard(
+  AuthStrategy.CUSTOMERS_NATIVE,
+) {
   constructor() {
     super();
   }

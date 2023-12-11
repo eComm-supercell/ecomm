@@ -1,20 +1,24 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
-import * as argon from 'argon2';
 import crypto from 'crypto';
 import string_decoder from 'string_decoder';
 import { exclude } from '@libs/common/src/utils/exclude';
 import { JwtService } from '@nestjs/jwt';
-import { LocalAuthSignupDto } from '@libs/common/src/users/dto/local-startegy/user-signup.dto';
 import { UsersService } from '@libs/common/src/users/users.service';
 import {
   CustomerIdpSignupDto,
+  CustomersEmailPasswordSignupDto,
   CustomersSignupDto,
-} from '@libs/common/src/users/dto/customers-local-startegy/signup.dto';
+} from '@libs/common/src/auth/dto/customers/customers-native-startegy/signup.dto';
+import { PrismaService } from '@libs/common/src/prisma/prisma.service';
+import { SharedAuthService } from '@libs/common/src/auth/sharedAuth.service';
+
 @Injectable()
-export class AuthService {
+export class CustomersAuthService {
   constructor(
     private jwtTokenService: JwtService,
     private userService: UsersService,
+    private prisma: PrismaService,
+    private sharedAuthService: SharedAuthService,
   ) {}
 
   async me(userId: number) {
@@ -34,41 +38,6 @@ export class AuthService {
       throw new ForbiddenException(error.message);
     }
   }
-  /**
-   * Validate user using username and password. This method is used for system accounts utilizing username and password authentication method. Currently admin accounts are the only system account following this pattern.
-   * This method is used by Local Strategy
-   * @deprecated
-   */
-  async validateUser(username: string, password: string): Promise<any> {
-    // Query user
-    const user = await this.userService.findLocalUserByUsername(username);
-    if (!user) {
-      return null;
-    }
-    // Verify password
-    if (user.password) {
-      const isPasswordMatched = await argon.verify(user.password, password);
-      //  Return user if password matched
-      if (!isPasswordMatched) {
-        return null;
-      }
-      const { id, role, username: uniqueUsername } = user;
-      // Return user without password
-      return {
-        // Generate JWT token
-        token: this.jwtTokenService.sign(
-          { id, role },
-          {
-            secret: process.env.JWT_SECRET,
-          },
-        ),
-        user: {
-          ...user,
-          username: uniqueUsername,
-        },
-      };
-    }
-  }
 
   /**
    * validate user using phone number. This method is used for system accounts utilizing phone number and password authentication method. Currently customer accounts are the only system account following this pattern. `NOTE:` password is ignored.
@@ -77,7 +46,9 @@ export class AuthService {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async validateCustomer(phone: string, _password?: string): Promise<any> {
     // Query user
-    const user = await this.userService.findCustomerByPhone(phone);
+    const user = await this.prisma.oldUser.findUnique({
+      where: { username: phone },
+    });
     if (!user) {
       return null;
     }
@@ -100,19 +71,58 @@ export class AuthService {
   }
 
   /**
-   * Create and signup new users using username and password. This method is used for system accounts utilizing username and password authentication method. Currently admin accounts are the only system account following this pattern.
-   *
-   */
-  async adminSignup(body: LocalAuthSignupDto) {
-    return await this.userService.createAdminAccount(body);
-  }
-
-  /**
    * Create and signup new Customers using phone number and password. This method is used for system accounts utilizing phone number and password authentication method. Currently customer accounts are the only system account following this pattern.
    *
    */
   async signupCustomerByPhone(body: CustomersSignupDto) {
     return await this.userService.signupCustomerByPhone(body);
+  }
+  /**
+   * Create and signup new Customers using email & password.
+   *
+   */
+  async signupCustomerByEmail(body: CustomersEmailPasswordSignupDto) {
+    const { email, password, firstName, lastName, gender } = body;
+
+    // create user record
+    const user = await this.prisma.user.create({
+      data: {
+        emailAddress: email,
+      },
+    });
+
+    // Create user auth method record
+    await this.prisma.authentication_method.create({
+      data: {
+        passwordHash: await this.sharedAuthService.hashPassword(password),
+        type: 'CUSTOMER',
+        user: {
+          connect: { id: user.id },
+        },
+      },
+    });
+
+    try {
+      // create user profile (Customer)
+      await this.prisma.profile.create({
+        data: {
+          firstName,
+          lastName,
+          gender,
+          user: {
+            connect: { id: user.id },
+          },
+        },
+      });
+    } catch (error) {
+      console.log(error);
+      throw new ForbiddenException(error.message);
+    }
+
+    // TODO: 1- send email verification
+    // TODO: 2- send welcome email
+    // TODO: 3- add default ROLE
+    return { success: true };
   }
 
   /**

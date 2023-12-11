@@ -8,61 +8,60 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model administrator {
-  createdAt    DateTime  @default(now()) @db.Timestamp(6)
-  updatedAt    DateTime  @default(now()) @db.Timestamp(6)
-  deletedAt    DateTime? @db.Timestamp(6)
-  firstName    String    @db.VarChar
-  lastName     String    @db.VarChar
-  emailAddress String    @unique() @db.VarChar
-  id           Int       @id() @default(autoincrement())
-  userId       Int?      @unique()
-  user         user?     @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+enum UserType {
+  CUSTOMER
+  ADMIN
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
+model user {
+  createdAt               DateTime               @default(now()) @db.Timestamp(6)
+  updatedAt               DateTime               @default(now()) @db.Timestamp(6)
+  deletedAt               DateTime?              @db.Timestamp(6)
+  identifier              String?                @db.VarChar
+  verified                Boolean                @default(false)
+  lastLogin               DateTime?              @db.Timestamp(6)
+  id                      Int                    @id() @default(autoincrement())
+  phoneNumber             String?                @unique() @db.VarChar
+  emailAddress            String?                @unique() @db.VarChar
+  profile                 profile?
+  authentication_method   authentication_method? @relation(fields: [authentication_methodId], references: [id])
+  authentication_methodId Int?                   @unique()
+  session                 session[]
+  user_roles_role         user_roles_role[]
+}
+
+model profile {
+  createdAt DateTime  @default(now()) @db.Timestamp(6)
+  updatedAt DateTime  @default(now()) @db.Timestamp(6)
+  deletedAt DateTime? @db.Timestamp(6)
+  firstName String    @db.VarChar
+  lastName  String?   @db.VarChar
+  gender    Gender
+  id        Int       @id() @default(autoincrement())
+  userId    Int?      @unique()
+  user      user?     @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model authentication_method {
-  createdAt             DateTime @default(now()) @db.Timestamp(6)
-  updatedAt             DateTime @default(now()) @db.Timestamp(6)
-  identifier            String?  @db.VarChar
-  passwordHash          String?  @db.VarChar
-  verificationToken     String?  @db.VarChar
-  passwordResetToken    String?  @db.VarChar
-  identifierChangeToken String?  @db.VarChar
-  pendingIdentifier     String?  @db.VarChar
-  strategy              String?  @db.VarChar
-  externalIdentifier    String?  @db.VarChar
+  createdAt             DateTime  @default(now()) @db.Timestamp(6)
+  updatedAt             DateTime  @default(now()) @db.Timestamp(6)
+  identifier            String?
+  passwordHash          String?   @db.VarChar
+  verificationToken     String?   @db.VarChar
+  passwordResetToken    String?   @db.VarChar
+  identifierChangeToken String?   @db.VarChar
+  pendingIdentifier     String?   @db.VarChar
+  strategy              String?   @db.VarChar
+  externalIdentifier    String?   @db.VarChar
   metadata              String?
-  id                    Int      @id() @default(autoincrement())
-  type                  String   @db.VarChar
-  userId                Int?
-  user                  user?    @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-
-  @@index([userId])
-  @@index([type])
-}
-
-model customer {
-  createdAt    DateTime  @default(now()) @db.Timestamp(6)
-  updatedAt    DateTime  @default(now()) @db.Timestamp(6)
-  deletedAt    DateTime? @db.Timestamp(6)
-  title        String?   @db.VarChar
-  firstName    String    @db.VarChar
-  lastName     String    @db.VarChar
-  phoneNumber  String?   @db.VarChar
-  emailAddress String    @db.VarChar
-  id           Int       @id() @default(autoincrement())
-  userId       Int?      @unique()
-  user         user?     @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-}
-
-model role {
-  createdAt       DateTime          @default(now()) @db.Timestamp(6)
-  updatedAt       DateTime          @default(now()) @db.Timestamp(6)
-  code            String            @db.VarChar
-  description     String            @db.VarChar
-  permissions     String
-  id              Int               @id() @default(autoincrement())
-  user_roles_role user_roles_role[]
+  id                    Int       @id() @default(autoincrement())
+  type                  UserType?
+  user                  user?
 }
 
 model session {
@@ -81,19 +80,14 @@ model session {
   @@index([type])
 }
 
-model user {
-  createdAt             DateTime                @default(now()) @db.Timestamp(6)
-  updatedAt             DateTime                @default(now()) @db.Timestamp(6)
-  deletedAt             DateTime?               @db.Timestamp(6)
-  identifier            String                  @db.VarChar
-  verified              Boolean                 @default(false)
-  lastLogin             DateTime?               @db.Timestamp(6)
-  id                    Int                     @id() @default(autoincrement())
-  administrator         administrator?
-  authentication_method authentication_method[]
-  customer              customer?
-  session               session[]
-  user_roles_role       user_roles_role[]
+model role {
+  createdAt       DateTime          @default(now()) @db.Timestamp(6)
+  updatedAt       DateTime          @default(now()) @db.Timestamp(6)
+  code            String            @db.VarChar
+  description     String            @db.VarChar
+  permissions     String
+  id              Int               @id() @default(autoincrement())
+  user_roles_role user_roles_role[]
 }
 
 model user_roles_role {
@@ -108,7 +102,7 @@ model user_roles_role {
 }
 
 // OLD db reference starts here
-model Profile {
+model OldProfile {
   id          Int       @id @default(autoincrement())
   dateOfBirth DateTime?
   mobile      String?
@@ -125,12 +119,12 @@ model OldUser {
   updatedAt       DateTime  @default(now())
   emailVerifiedAt DateTime?
 
-  email    String?  @unique
-  username String?  @unique
+  email    String?     @unique
+  username String?     @unique
   lname    String?
   fname    String?
   password String?
-  profile  Profile?
+  profile  OldProfile?
 
   // values: google, facebook
   provider     String?
@@ -220,20 +214,20 @@ model Province {
 }
 
 model Address {
-  id          Int      @id @default(autoincrement())
+  id          Int        @id @default(autoincrement())
   street      String?
   cityId      Int?
-  city        City?    @relation(fields: [cityId], references: [id])
+  city        City?      @relation(fields: [cityId], references: [id])
   provinceId  Int
-  province    Province @relation(fields: [provinceId], references: [id])
+  province    Province   @relation(fields: [provinceId], references: [id])
   order       Order[]
   latitude    Float?
   longitude   Float?
   buildingNo  String?
   floorNo     String?
   apartmentNo String?
-  profile     Profile  @relation(fields: [profileId], references: [id])
-  profileId   Int      @unique
+  profile     OldProfile @relation(fields: [profileId], references: [id])
+  profileId   Int        @unique
 }
 
 model Category {

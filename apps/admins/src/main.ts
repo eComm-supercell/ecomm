@@ -2,9 +2,12 @@ import { NestFactory } from '@nestjs/core';
 import { AdminsModule } from './admins.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
+import { AppExceptionFilter } from '@libs/common/src/exceptions/custom-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AdminsModule);
+  // Add global exception filter
+  app.useGlobalFilters(new AppExceptionFilter());
   // Config service
   const configService = app.get<ConfigService>(ConfigService);
   const config = new DocumentBuilder()

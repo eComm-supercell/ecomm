@@ -1,20 +1,23 @@
 import { Controller } from '@nestjs/common';
 import crypto from 'crypto';
 import string_decoder from 'string_decoder';
-import { AuthService } from './authentication.service';
+import { AdminsAuthService } from './authentication.admins.service';
+import { CustomersAuthService } from './authentication.customers.service';
 import { MessagePattern } from '@nestjs/microservices';
-import { LocalAuthSignupDto } from '@libs/common/src/users/dto/local-startegy/user-signup.dto';
+import { LocalAuthSignupDto } from '@libs/common/src/auth/dto/customers/local-startegy/user-signup.dto';
 import {
   CustomerIdpSignupDto,
+  CustomersEmailPasswordSignupDto,
   CustomersSignupDto,
-} from '@libs/common/src/users/dto/customers-local-startegy/signup.dto';
+} from '@libs/common/src/auth/dto/customers/customers-native-startegy/signup.dto';
 import { UsersService } from '@libs/common/src/users/users.service';
 
 @Controller('auth')
 export class AuthController {
   constructor(
-    private readonly authService: AuthService,
+    private readonly adminsAuthService: AdminsAuthService,
     private readonly userService: UsersService,
+    private readonly customersAuthService: CustomersAuthService,
   ) {}
 
   /**
@@ -23,7 +26,7 @@ export class AuthController {
    */
   @MessagePattern({ cmd: 'login' })
   async me(userId: number) {
-    return await this.authService.me(userId);
+    return await this.adminsAuthService.me(userId);
   }
 
   /**
@@ -33,17 +36,7 @@ export class AuthController {
    */
   @MessagePattern({ cmd: 'validateUser' })
   async validateUser(username: string, password: string) {
-    return await this.authService.validateUser(username, password);
-  }
-
-  /**
-   * validate user using phone number. This method is used for system accounts utilizing phone number and password authentication method. Currently customer accounts are the only system account following this pattern. `NOTE:` password is ignored.
-   *
-   */
-  @MessagePattern({ cmd: 'validateUser' })
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async validateCustomer(phone: string, _password?: string) {
-    return await this.authService.validateCustomer(phone);
+    return await this.adminsAuthService.validateUser(username, password);
   }
 
   /**
@@ -52,7 +45,7 @@ export class AuthController {
    */
   @MessagePattern({ cmd: 'adminSignup' })
   async adminSignup(body: LocalAuthSignupDto) {
-    return await this.authService.adminSignup(body);
+    return await this.adminsAuthService.adminSignup(body);
   }
 
   /**
@@ -61,7 +54,15 @@ export class AuthController {
    */
   @MessagePattern({ cmd: 'signupCustomerByPhone' })
   async signupCustomerByPhone(body: CustomersSignupDto) {
-    return await this.authService.signupCustomerByPhone(body);
+    return await this.customersAuthService.signupCustomerByPhone(body);
+  }
+
+  /**
+   * Create new Customer account using email & password.
+   */
+  @MessagePattern({ cmd: 'signupCustomerByEmail' })
+  async signupCustomerByEmail(body: CustomersEmailPasswordSignupDto) {
+    return await this.customersAuthService.signupCustomerByEmail(body);
   }
 
   /**
@@ -86,5 +87,14 @@ export class AuthController {
       nonce = decoder.write(buf);
     }
     return nonce.slice(0, length);
+  }
+  /**
+   * validate user using phone number. This method is used for system accounts utilizing phone number and password authentication method. Currently customer accounts are the only system account following this pattern. `NOTE:` password is ignored.
+   *
+   */
+  @MessagePattern({ cmd: 'validateUser' })
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async validateCustomer(phone: string, _password?: string) {
+    return await this.customersAuthService.validateCustomer(phone);
   }
 }

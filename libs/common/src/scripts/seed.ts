@@ -19,7 +19,7 @@ async function seed() {
   console.info('Seeding database...');
 
   const client = new PrismaClient();
-  await client.user.upsert({
+  await client.oldUser.upsert({
     where: { username: 'super' },
     update: {},
     create: {

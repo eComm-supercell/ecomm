@@ -1,11 +1,12 @@
 import { Inject, Injectable } from '@nestjs/common';
 import string_decoder from 'string_decoder';
-import { LocalAuthSignupDto } from '@libs/common/src/users/dto/local-startegy/user-signup.dto';
+import { LocalAuthSignupDto } from '@libs/common/src/auth/dto/customers/local-startegy/user-signup.dto';
 import crypto from 'crypto';
 import {
   CustomerIdpSignupDto,
+  CustomersEmailPasswordSignupDto,
   CustomersSignupDto,
-} from '@libs/common/src/users/dto/customers-local-startegy/signup.dto';
+} from '@libs/common/src/auth/dto/customers/customers-native-startegy/signup.dto';
 import { SERVICE_NAMES } from '@libs/common/src/constants/service-names';
 import { ClientProxy } from '@nestjs/microservices';
 import { handleMicroserviceExceptions } from '@libs/common/src/utils/microservicesExceptionHandler';
@@ -16,6 +17,17 @@ export class AuthService {
   constructor(
     @Inject(SERVICE_NAMES.auth.label) private clientAuth: ClientProxy,
   ) {}
+
+  /**
+   *
+   */
+  async signupCustomerByEmail(body: CustomersEmailPasswordSignupDto) {
+    return await lastValueFrom(
+      this.clientAuth
+        .send({ cmd: 'signupCustomerByEmail' }, body)
+        .pipe(handleMicroserviceExceptions()),
+    );
+  }
 
   /**
    * Retrieve user information (Profile)

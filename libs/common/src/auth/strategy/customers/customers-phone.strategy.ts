@@ -3,16 +3,18 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-local';
 import { JwtService } from '@nestjs/jwt';
 import AuthStrategy from '@libs/common/src/enums/auth-startegy.enum';
-import { UsersService } from '../../users/users.service';
+import { UsersService } from '@libs/common/src/users/users.service';
+import { PrismaService } from '@libs/common/src/prisma/prisma.service';
 
 @Injectable()
 export class CustomersPhoneStrategy extends PassportStrategy(
   Strategy,
-  AuthStrategy.CUSTOMERS,
+  AuthStrategy.CUSTOMERS_PHONE,
 ) {
   constructor(
     private jwtTokenService: JwtService,
     private userService: UsersService,
+    private prisma: PrismaService,
   ) {
     super({ usernameField: 'phone', passwordField: 'phone' });
   }
@@ -25,7 +27,10 @@ export class CustomersPhoneStrategy extends PassportStrategy(
   async validate(username: string, _password: ''): Promise<any> {
     // Query user
     const phone = username;
-    const user = await this.userService.findCustomerByPhone(phone);
+
+    const user = await this.prisma.oldUser.findUnique({
+      where: { username: phone },
+    });
     if (!user) {
       throw new UnauthorizedException();
     }

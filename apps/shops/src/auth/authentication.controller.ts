@@ -7,24 +7,30 @@ import {
   Body,
 } from '@nestjs/common';
 import {
-  ApiBearerAuth,
+  // ApiBearerAuth,
   ApiBody,
   ApiCreatedResponse,
   ApiOkResponse,
   ApiTags,
   OmitType,
 } from '@nestjs/swagger';
-import { JwtGuard } from '@libs/common/src/auth/guard/jwt.guard';
+// import { JwtGuard } from '@libs/common/src/auth/guard/jwt.guard';
 import { apiExceptionResponse } from '@libs/common/src/exceptions/exception.decorator';
 import { AuthService } from './authentication.service';
-import { CustomersPhoneAuthGuard } from '@libs/common/src/auth/guard/customers-phone.guard';
-import { LocalAuthResponseDto } from '@libs/common/src/users/dto/local-startegy/user-login.dto';
-import { getLocalUser } from '@libs/common/src/users/decorators/getuser.decorator';
+import { CustomersPhoneAuthGuard } from '@libs/common/src/auth/guard/customers/customers-phone.guard';
+import { LocalAuthResponseDto } from '@libs/common/src/auth/dto/customers/local-startegy/user-login.dto';
+// import { getLocalUser } from '@libs/common/src/users/decorators/getuser.decorator';
 import {
   CustomerIdpSignupDto,
+  CustomersEmailPasswordSignupDto,
   CustomersSignupDto,
-} from '@libs/common/src/users/dto/customers-local-startegy/signup.dto';
-import { CustomerPhoneLoginDto } from '@libs/common/src/users/dto/customers-local-startegy/login.dto';
+} from '@libs/common/src/auth/dto/customers/customers-native-startegy/signup.dto';
+import {
+  CustomerNativeLoginDto,
+  CustomerPhoneLoginDto,
+  CustomersNativeAuthResponse,
+} from '@libs/common/src/auth/dto/customers/customers-native-startegy/login.dto';
+import { CustomersNativeAuthGuard } from '@libs/common/src/auth/guard/customers/customers-native.guard';
 
 @ApiTags('Authentication')
 @Controller('auth')
@@ -32,14 +38,33 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   /**
-   * Get current logged in user. Currently return Local (admin) user only.
+   * Create new Customer account using `email` & `password` (Native Strategy).
+   *
    */
-  @UseGuards(JwtGuard)
-  @ApiBearerAuth()
-  @Get('/me')
-  @ApiOkResponse({ type: LocalAuthResponseDto })
-  me(@getLocalUser() user: any) {
-    return user;
+  @Post('/native/signup')
+  @apiExceptionResponse()
+  @ApiCreatedResponse({
+    description: 'User created successfully',
+  })
+  signupCustomerByEmail(
+    @Body()
+    body: CustomersEmailPasswordSignupDto,
+  ) {
+    return this.authService.signupCustomerByEmail(body);
+  }
+
+  /**
+   * Login Customers using `email` & `password` (Native Strategy).
+   */
+  @UseGuards(CustomersNativeAuthGuard)
+  @ApiBody({ type: CustomerNativeLoginDto })
+  @ApiCreatedResponse({
+    type: CustomersNativeAuthResponse,
+  })
+  @apiExceptionResponse()
+  @Post('/native/login')
+  customerEmailLogin(@Request() req: any) {
+    return req.user;
   }
 
   /**

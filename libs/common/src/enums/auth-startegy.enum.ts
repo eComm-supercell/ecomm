@@ -1,6 +1,7 @@
 enum AuthStrategy {
   LOCAL = 'local',
-  CUSTOMERS = 'customers',
+  CUSTOMERS_PHONE = 'PHONE', // phone & otp
+  CUSTOMERS_NATIVE = 'NATIVE', // email & password
 }
 
 export default AuthStrategy;
