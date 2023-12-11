@@ -8,6 +8,7 @@ import { FirebaseModule } from '@libs/common/src/firebase/firebase.module';
 import { PrismaModule } from '@libs/common/src/prisma/prisma.module';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { SERVICE_NAMES } from '@libs/common/src/constants/service-names';
+import { SharedAuthModule } from '@libs/common/src/auth/sharedAuth.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { SERVICE_NAMES } from '@libs/common/src/constants/service-names';
     PassportModule,
     FirebaseModule,
     PrismaModule,
+    SharedAuthModule,
   ],
   controllers: [AuthController],
   providers: [AuthService],

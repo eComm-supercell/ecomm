@@ -58,12 +58,7 @@ export class CustomersNativeStrategy extends PassportStrategy(
         // Return user data
         return {
           // Generate JWT token
-          token: this.jwtTokenService.sign(
-            { id: userId },
-            {
-              secret: process.env.JWT_SECRET,
-            },
-          ),
+          token: await this.sharedAuthService.generateJWtToken({ id: userId }),
           user: {
             lastLogin,
             verified,

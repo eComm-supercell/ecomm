@@ -57,12 +57,7 @@ export class CustomersAuthService {
     // Return user without password
     return {
       // Generate JWT token
-      token: this.jwtTokenService.sign(
-        { id, role },
-        {
-          secret: process.env.JWT_SECRET,
-        },
-      ),
+      token: await this.sharedAuthService.generateJWtToken({ id, role }),
       user: {
         ...user,
         username: uniqueUsername,

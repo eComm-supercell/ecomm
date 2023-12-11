@@ -79,4 +79,21 @@ export class SharedAuthService {
       throw new BadRequestException('Error verifying password');
     }
   }
+
+  /**
+   * Generate JWT token.
+   *
+   * *NOTE*: this method is `payload` agnostic !! It will only spread the `payload` object and use a shared system wide `secret` value.
+   *
+   * @param payload
+   * @returns
+   */
+  async generateJWtToken(payload: any) {
+    return this.jwtTokenService.signAsync(
+      { ...payload },
+      {
+        secret: process.env.JWT_SECRET,
+      },
+    );
+  }
 }

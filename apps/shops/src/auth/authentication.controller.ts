@@ -31,11 +31,16 @@ import {
   CustomersNativeAuthResponse,
 } from '@libs/common/src/auth/dto/customers/customers-native-startegy/login.dto';
 import { CustomersNativeAuthGuard } from '@libs/common/src/auth/guard/customers/customers-native.guard';
+import { CustomersGoogleAuthGuard } from '@libs/common/src/auth/guard/customers/customers-google-oauth.guard';
+import { SharedAuthService } from '@libs/common/src/auth/sharedAuth.service';
 
 @ApiTags('Authentication')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly sharedAuthService: SharedAuthService,
+  ) {}
 
   /**
    * Create new Customer account using `email` & `password` (Native Strategy).
@@ -65,6 +70,26 @@ export class AuthController {
   @Post('/native/login')
   customerEmailLogin(@Request() req: any) {
     return req.user;
+  }
+
+  /**
+   * Initiates the Google OAuth authentication process.
+   * The user will be redirected to the Google OAuth authorization page.
+   * After successful authorization, Google will redirect the user back to /auth/google/callback.
+   *
+   * Redirects the user to the Google OAuth authorization page.
+   */
+  @Get('google')
+  @ApiOkResponse()
+  @UseGuards(CustomersGoogleAuthGuard)
+  async googleAuth() {}
+
+  @Get('google/callback')
+  @UseGuards(CustomersGoogleAuthGuard)
+  async googleAuthRedirect(@Request() req: any) {
+    // generate a signed json web token with the contents of user object and return it in the response
+    const token = await this.sharedAuthService.generateJWtToken(req.user);
+    return { user: req.user, token };
   }
 
   /**

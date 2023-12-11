@@ -8,6 +8,7 @@ import { CustomersPhoneStrategy } from './strategy/customers/customers-phone.str
 import { JwtQueryStrategy } from './strategy/jwtquery.strategy';
 import { PrismaModule } from '../prisma/prisma.module';
 import { CustomersNativeStrategy } from './strategy/customers/customers-native.strategy';
+import { CustomersGoogleStrategy } from './strategy/customers/customers-google-oauth.strategy';
 
 @Global()
 @Module({
@@ -26,6 +27,7 @@ import { CustomersNativeStrategy } from './strategy/customers/customers-native.s
     JwtQueryStrategy,
     CustomersPhoneStrategy,
     CustomersNativeStrategy,
+    CustomersGoogleStrategy,
   ],
   exports: [SharedAuthService, JwtModule],
 })
