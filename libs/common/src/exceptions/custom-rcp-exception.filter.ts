@@ -4,7 +4,8 @@ import { RpcException } from '@nestjs/microservices';
 
 @Catch(RpcException)
 export class ExceptionFilter implements RpcExceptionFilter<RpcException> {
-  catch(exception: RpcException, host: ArgumentsHost): Observable<any> {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  catch(exception: RpcException, _host: ArgumentsHost): Observable<any> {
     //  Add logic here if needed for any thrown RCP execption
     return throwError(() => exception.getError());
   }
