@@ -12,7 +12,9 @@ services:
     volumes:
       - .:/app
       - exclude:/app/node_modules/
-    command: npm run start:prod:auth
+    command: bash -c "dotenv -e .env.prod -- npx prisma migrate deploy
+      && dotenv -e .env.prod -- npx prisma db seed && npm run start:prod:auth"
+
     depends_on:
       - postgres
       - redis
@@ -39,48 +41,48 @@ services:
       - auth
     networks:
       - web
-  platform:
-    container_name: platform
-    build:
-      context: .
-      dockerfile: Dockerfile.platform
-      target: build
-    restart: on-failure
-    ports:
-      - 3000:3000
-    volumes:
-      - .:/app
-      - exclude:/app/node_modules/
-    command: bash -c "dotenv -e .env.prod -- npx prisma migrate deploy
-      && dotenv -e .env.prod -- npx prisma db seed && npm run start:prod:platform"
+  # platform:
+  #   container_name: platform
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile.platform
+  #     target: build
+  #   restart: on-failure
+  #   ports:
+  #     - 3000:3000
+  #   volumes:
+  #     - .:/app
+  #     - exclude:/app/node_modules/
+  #   command: bash -c "dotenv -e .env.prod -- npx prisma migrate deploy
+  #     && dotenv -e .env.prod -- npx prisma db seed && npm run start:prod:platform"
 
-    depends_on:
-      - postgres
-      - redis
-      - meilisearch
-      - auth
-    networks:
-      - web
-  admins:
-    container_name: admins
-    build:
-      context: .
-      dockerfile: Dockerfile.admins
-      target: production
-    restart: on-failure
-    ports:
-      - 3002:3002
-    volumes:
-      - .:/app
-      - exclude:/app/node_modules/
-    command: npm run start:prod:admins
-    depends_on:
-      - postgres
-      - redis
-      - meilisearch
-      - auth
-    networks:
-      - web
+  #   depends_on:
+  #     - postgres
+  #     - redis
+  #     - meilisearch
+  #     - auth
+  #   networks:
+  #     - web
+  # admins:
+  #   container_name: admins
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile.admins
+  #     target: production
+  #   restart: on-failure
+  #   ports:
+  #     - 3002:3002
+  #   volumes:
+  #     - .:/app
+  #     - exclude:/app/node_modules/
+  #   command: npm run start:prod:admins
+  #   depends_on:
+  #     - postgres
+  #     - redis
+  #     - meilisearch
+  #     - auth
+  #   networks:
+  #     - web
   postgres:
     build:
       context: .
