@@ -2,8 +2,7 @@ import { ForbiddenException, Injectable } from '@nestjs/common';
 import crypto from 'crypto';
 import string_decoder from 'string_decoder';
 import { exclude } from '@libs/common/src/utils/exclude';
-import { JwtService } from '@nestjs/jwt';
-import { UsersService } from '@libs/common/src/users/users.service';
+import { SharedUsersService } from '@libs/common/src/users/users.service';
 import {
   CustomerIdpSignupDto,
   CustomersEmailPasswordSignupDto,
@@ -15,8 +14,7 @@ import { SharedAuthService } from '@libs/common/src/auth/sharedAuth.service';
 @Injectable()
 export class CustomersAuthService {
   constructor(
-    private jwtTokenService: JwtService,
-    private userService: UsersService,
+    private userService: SharedUsersService,
     private prisma: PrismaService,
     private sharedAuthService: SharedAuthService,
   ) {}

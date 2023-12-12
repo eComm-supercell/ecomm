@@ -3,13 +3,13 @@ import * as argon from 'argon2';
 import { exclude } from '@libs/common/src/utils/exclude';
 import { JwtService } from '@nestjs/jwt';
 import { LocalAuthSignupDto } from '@libs/common/src/auth/dto/customers/local-startegy/user-signup.dto';
-import { UsersService } from '@libs/common/src/users/users.service';
+import { SharedUsersService } from '@libs/common/src/users/users.service';
 
 @Injectable()
 export class AdminsAuthService {
   constructor(
     private jwtTokenService: JwtService,
-    private userService: UsersService,
+    private userService: SharedUsersService,
   ) {}
 
   async me(userId: number) {

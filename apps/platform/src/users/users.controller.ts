@@ -8,7 +8,7 @@ import {
   Body,
   UseGuards,
 } from '@nestjs/common';
-import { UsersService } from '@libs/common/src/users/users.service';
+import { SharedUsersService } from '@libs/common/src/users/users.service';
 import {
   ApiBearerAuth,
   ApiCreatedResponse,
@@ -29,7 +29,7 @@ import { AbilitiesGuard } from '@libs/common/src/ability/guard/abilities.guard';
 @Controller('users')
 @ApiTags('User')
 export class UsersController {
-  constructor(private usersService: UsersService) {}
+  constructor(private usersService: SharedUsersService) {}
 
   /**
    *

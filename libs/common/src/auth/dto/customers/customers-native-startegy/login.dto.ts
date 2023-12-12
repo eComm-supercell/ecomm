@@ -1,14 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsPhoneNumber, IsStrongPassword } from 'class-validator';
-export class CustomerPhoneLoginDto {
-  @ApiProperty({
-    description: 'Customer phone number',
-    required: true,
-    example: '0781234567',
-  })
-  @IsPhoneNumber('IQ')
-  phone: string;
-}
+import { IsEmail, IsStrongPassword } from 'class-validator';
 
 export class CustomerNativeLoginDto {
   @ApiProperty({
@@ -28,5 +19,3 @@ export class CustomerNativeLoginDto {
   @IsStrongPassword({ minLength: 8 })
   password: string;
 }
-
-export class CustomersNativeAuthResponse {}

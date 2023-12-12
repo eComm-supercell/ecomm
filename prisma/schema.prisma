@@ -18,6 +18,15 @@ enum Gender {
   FEMALE
 }
 
+enum AuthenticationStartegy {
+  NATIVE
+  OAUTH
+}
+
+enum AuthenticationIdentifier {
+  GOOGLE
+}
+
 model user {
   createdAt               DateTime               @default(now()) @db.Timestamp(6)
   updatedAt               DateTime               @default(now()) @db.Timestamp(6)
@@ -48,18 +57,18 @@ model profile {
 }
 
 model authentication_method {
-  createdAt             DateTime  @default(now()) @db.Timestamp(6)
-  updatedAt             DateTime  @default(now()) @db.Timestamp(6)
-  identifier            String?
-  passwordHash          String?   @db.VarChar
-  verificationToken     String?   @db.VarChar
-  passwordResetToken    String?   @db.VarChar
-  identifierChangeToken String?   @db.VarChar
-  pendingIdentifier     String?   @db.VarChar
-  strategy              String?   @db.VarChar
-  externalIdentifier    String?   @db.VarChar
+  createdAt             DateTime                  @default(now()) @db.Timestamp(6)
+  updatedAt             DateTime                  @default(now()) @db.Timestamp(6)
+  identifier            AuthenticationIdentifier?
+  passwordHash          String?                   @db.VarChar
+  verificationToken     String?                   @db.VarChar
+  passwordResetToken    String?                   @db.VarChar
+  identifierChangeToken String?                   @db.VarChar
+  pendingIdentifier     String?                   @db.VarChar
+  strategy              AuthenticationStartegy?
+  externalIdentifier    String?                   @db.VarChar
   metadata              String?
-  id                    Int       @id() @default(autoincrement())
+  id                    Int                       @id() @default(autoincrement())
   type                  UserType?
   user                  user?
 }

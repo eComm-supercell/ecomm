@@ -10,13 +10,13 @@ import {
   CustomersEmailPasswordSignupDto,
   CustomersSignupDto,
 } from '@libs/common/src/auth/dto/customers/customers-native-startegy/signup.dto';
-import { UsersService } from '@libs/common/src/users/users.service';
+import { SharedUsersService } from '@libs/common/src/users/users.service';
 
 @Controller('auth')
 export class AuthController {
   constructor(
     private readonly adminsAuthService: AdminsAuthService,
-    private readonly userService: UsersService,
+    private readonly userService: SharedUsersService,
     private readonly customersAuthService: CustomersAuthService,
   ) {}
 

@@ -3,7 +3,6 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-local';
 import { JwtService } from '@nestjs/jwt';
 import AuthStrategy from '@libs/common/src/enums/auth-startegy.enum';
-import { UsersService } from '@libs/common/src/users/users.service';
 import { PrismaService } from '@libs/common/src/prisma/prisma.service';
 
 @Injectable()
@@ -13,7 +12,6 @@ export class CustomersPhoneStrategy extends PassportStrategy(
 ) {
   constructor(
     private jwtTokenService: JwtService,
-    private userService: UsersService,
     private prisma: PrismaService,
   ) {
     super({ usernameField: 'phone', passwordField: 'phone' });

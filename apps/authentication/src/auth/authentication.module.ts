@@ -8,7 +8,7 @@ import { JwtModule, JwtService } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { FirebaseModule } from '@libs/common/src/firebase/firebase.module';
 import { UsersModule } from '@libs/common/src/users/users.module';
-import { UsersService } from '@libs/common/src/users/users.service';
+import { SharedUsersService } from '@libs/common/src/users/users.service';
 import { LocalStrategy } from '@libs/common/src/auth/strategy/local.strategy';
 import { CustomersPhoneStrategy } from '@libs/common/src/auth/strategy/customers/customers-phone.strategy';
 import { JwtStrategy } from '@libs/common/src/auth/strategy/jwt.strategy';
@@ -46,7 +46,7 @@ import { SharedAuthModule } from '@libs/common/src/auth/sharedAuth.module';
     JwtQueryStrategy,
     CustomersAuthService,
     JwtService,
-    UsersService,
+    SharedUsersService,
   ],
 })
 export class AuthenticationModule {}

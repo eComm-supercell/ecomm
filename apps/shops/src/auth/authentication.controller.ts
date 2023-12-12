@@ -10,7 +10,9 @@ import {
   // ApiBearerAuth,
   ApiBody,
   ApiCreatedResponse,
+  ApiExcludeEndpoint,
   ApiOkResponse,
+  ApiOperation,
   ApiTags,
   OmitType,
 } from '@nestjs/swagger';
@@ -25,14 +27,13 @@ import {
   CustomersEmailPasswordSignupDto,
   CustomersSignupDto,
 } from '@libs/common/src/auth/dto/customers/customers-native-startegy/signup.dto';
-import {
-  CustomerNativeLoginDto,
-  CustomerPhoneLoginDto,
-  CustomersNativeAuthResponse,
-} from '@libs/common/src/auth/dto/customers/customers-native-startegy/login.dto';
+import { CustomerPhoneLoginDto } from '@libs/common/src/auth/dto/customers/customers-phone-strategy/login.dto';
 import { CustomersNativeAuthGuard } from '@libs/common/src/auth/guard/customers/customers-native.guard';
 import { CustomersGoogleAuthGuard } from '@libs/common/src/auth/guard/customers/customers-google-oauth.guard';
 import { SharedAuthService } from '@libs/common/src/auth/sharedAuth.service';
+import { CustomersGoogleOatuhResponseDto } from '@libs/common/src/auth/dto/customers/customers-google-oauth-startegy/oauth-response.dto';
+import { CustomersNativeAuthResponse } from '@libs/common/src/auth/dto/customers/customers-native-startegy/login-response.dto';
+import { CustomerNativeLoginDto } from '@libs/common/src/auth/dto/customers/customers-native-startegy/login.dto';
 
 @ApiTags('Authentication')
 @Controller('auth')
@@ -73,23 +74,31 @@ export class AuthController {
   }
 
   /**
-   * Initiates the Google OAuth authentication process.
-   * The user will be redirected to the Google OAuth authorization page.
-   * After successful authorization, Google will redirect the user back to /auth/google/callback.
+   * Initiates the ```Google OAuth``` authentication process.
+   * The user will be redirected to the ```Google OAuth``` authorization page.
+   * After successful authorization, Google will redirect the user back to `/auth/google/callback`.
    *
-   * Redirects the user to the Google OAuth authorization page.
+   * **NOTE:** The endpoint response is infact returned by the `auth/google/callback` endpoint and is only documented here for reference. The 'callback' endpoint URL is hidden
    */
   @Get('google')
-  @ApiOkResponse()
+  @ApiOkResponse({ type: CustomersGoogleOatuhResponseDto })
   @UseGuards(CustomersGoogleAuthGuard)
   async googleAuth() {}
 
+  /**
+   * Callback for Google OAuth. This method is called by Google after successful authorization.
+   * @param req
+   * @returns
+   */
+  @ApiOperation({ summary: 'Google OAuth callback' })
+  @ApiExcludeEndpoint()
   @Get('google/callback')
   @UseGuards(CustomersGoogleAuthGuard)
   async googleAuthRedirect(@Request() req: any) {
     // generate a signed json web token with the contents of user object and return it in the response
+    // NOTE: you can add any needed logic here. this endpoint is called by Google after successfull authorization.
     const token = await this.sharedAuthService.generateJWtToken(req.user);
-    return { user: req.user, token };
+    return { ...req.user, token };
   }
 
   /**

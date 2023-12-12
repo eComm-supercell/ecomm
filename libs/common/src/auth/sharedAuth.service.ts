@@ -5,13 +5,13 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as argon from 'argon2';
-import { UsersService } from '../users/users.service';
+import { SharedUsersService } from '../users/users.service';
 
 @Injectable()
 export class SharedAuthService {
   constructor(
     private jwtTokenService: JwtService,
-    private userService: UsersService,
+    private userService: SharedUsersService,
   ) {}
 
   /***

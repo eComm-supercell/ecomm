@@ -20,12 +20,106 @@ import {
 import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
-export class UsersService {
+export class SharedUsersService {
   constructor(
     private prisma: PrismaService,
     private firebase: FirebaseService,
     private jwtTokenService: JwtService,
   ) {}
+
+  /**
+   * Customers (Shops API)
+   */
+  /**
+   * Finds and returns Customer if exists via email.
+   * @param email
+   * @returns
+   */
+  async findCustomerByEmail(email: string) {
+    const existingUser = await this.prisma.user.findUniqueOrThrow({
+      where: {
+        emailAddress: email,
+      },
+      include: {
+        authentication_method: true,
+        profile: true,
+      },
+    });
+
+    const {
+      id,
+      createdAt,
+      emailAddress,
+      updatedAt,
+      verified,
+      profile: existingUserProfile,
+      authentication_method: existingUserAuthMethod,
+    } = existingUser;
+    if (existingUserProfile && existingUserAuthMethod) {
+      const {
+        firstName,
+        lastName,
+        gender,
+        id: existingUserProfileId,
+      } = existingUserProfile;
+      const { type, strategy, identifier } = existingUserAuthMethod;
+      return {
+        id,
+        createdAt,
+        updatedAt,
+        emailAddress,
+        verified,
+        firstName,
+        lastName,
+        gender,
+        profileId: existingUserProfileId,
+        userType: type,
+        authenticationMethod: strategy,
+        identifier,
+      };
+    }
+  }
+
+  /**
+   * Creates a new customer user.
+   * @param email
+   * @param name
+   */
+  async createCustomerByEmailAndName(email: string, name: string) {
+    // create user
+    const newUser = await this.prisma.user.create({
+      data: {
+        emailAddress: email,
+      },
+    });
+
+    // add profile
+    await this.prisma.profile.create({
+      data: {
+        firstName: name,
+        gender: 'MALE',
+        user: {
+          connect: {
+            id: newUser.id,
+          },
+        },
+      },
+    });
+
+    // add auth method data
+    await this.prisma.authentication_method.create({
+      data: {
+        strategy: 'OAUTH',
+        type: 'CUSTOMER',
+        identifier: 'GOOGLE',
+        user: {
+          connect: {
+            id: newUser.id,
+          },
+        },
+      },
+    });
+  }
 
   /**
    * Unified select fields for local users
