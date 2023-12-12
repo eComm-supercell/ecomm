@@ -19,11 +19,11 @@ services:
       - meilisearch
     networks:
       - web
-  customers:
-    container_name: customers
+  shops:
+    container_name: shops
     build:
       context: .
-      dockerfile: Dockerfile.customers
+      dockerfile: Dockerfile.shops
       target: production
     restart: on-failure
     ports:
@@ -31,7 +31,7 @@ services:
     volumes:
       - .:/app
       - exclude:/app/node_modules/
-    command: npm run start:prod:customers
+    command: npm run start:prod:shops
     depends_on:
       - postgres
       - redis

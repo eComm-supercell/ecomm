@@ -8,7 +8,7 @@ COPY . .
 RUN yarn global add dotenv-cli 
 RUN dotenv -e .env.prod -- npx prisma generate
 RUN yarn build common
-RUN yarn build customers
+RUN yarn build shops
 
 FROM build as production
 WORKDIR /usr/src/app
@@ -21,6 +21,6 @@ COPY --chown=node:node --from=build /usr/src/app/node_modules/.prisma/client  ./
 
 ENV NODE_ENV production
 EXPOSE 3001
-CMD ["node", "dist/apps/customers/main"]
+CMD ["node", "dist/apps/shops/main"]
 
 # SEE for inspiration: https://hackernoon.com/5-steps-for-dockerizing-nestjs-with-prisma

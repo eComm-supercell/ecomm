@@ -11,29 +11,29 @@ services:
       POSTGRES_DB: postgres
 
     restart: always
-  # redis:
-  #   image: redis:latest
-  #   container_name: redis
-  #   ports:
-  #     - 6378:6378
-  # meilisearch:
-  #   image: getmeili/meilisearch:v1.2
-  #   container_name: meilisearch
-  #   environment:
-  #     - http_proxy
-  #     - https_proxy
-  #     - MEILI_MASTER_KEY=${MEILI_MASTER_KEY:-masterKey}
-  #     - MEILI_NO_ANALYTICS=${MEILI_NO_ANALYTICS:-true}
-  #     - MEILI_ENV=${MEILI_ENV:-development}
-  #     - MEILI_LOG_LEVEL
-  #     - MEILI_DB_PATH=${MEILI_DB_PATH:-/data.ms}
-  #   ports:
-  #     - ${MEILI_PORT:-7700}:7700
-  #   networks:
-  #     - meilisearch
-  #   volumes:
-  #     - ./data.ms:/data.ms
-  #   restart: unless-stopped
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - 6378:6378
+  meilisearch:
+    image: getmeili/meilisearch:v1.2
+    container_name: meilisearch
+    environment:
+      - http_proxy
+      - https_proxy
+      - MEILI_MASTER_KEY=${MEILI_MASTER_KEY:-masterKey}
+      - MEILI_NO_ANALYTICS=${MEILI_NO_ANALYTICS:-true}
+      - MEILI_ENV=${MEILI_ENV:-development}
+      - MEILI_LOG_LEVEL
+      - MEILI_DB_PATH=${MEILI_DB_PATH:-/data.ms}
+    ports:
+      - ${MEILI_PORT:-7700}:7700
+    networks:
+      - meilisearch
+    volumes:
+      - ./data.ms:/data.ms
+    restart: unless-stopped
 
 networks:
   meilisearch:

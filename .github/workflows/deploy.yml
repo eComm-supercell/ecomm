@@ -17,8 +17,8 @@ jobs:
           node-version: '18'
       - name: Stop and remove containers
         run: |
-          docker container stop platform customers admins auth redis postgres meilisearch nginx || true
-          docker container rm platform customers admins auth redis postgres meilisearch nginx || true
+          docker container stop platform shops admins auth redis postgres meilisearch nginx || true
+          docker container rm platform shops admins auth redis postgres meilisearch nginx || true
           docker system prune -f || true
       - name: Run docker compose
         run: docker compose -f docker-compose.yml up -d --build --remove-orphans
