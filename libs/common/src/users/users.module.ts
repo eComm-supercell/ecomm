@@ -1,5 +1,5 @@
 import { Global, Module } from '@nestjs/common';
-import { UsersService } from './users.service';
+import { SharedUsersService } from './users.service';
 import { JwtModule } from '@nestjs/jwt';
 import { FirebaseModule } from '../firebase/firebase.module';
 
@@ -12,7 +12,7 @@ import { FirebaseModule } from '../firebase/firebase.module';
     }),
     FirebaseModule,
   ],
-  providers: [UsersService],
-  exports: [UsersService, JwtModule],
+  providers: [SharedUsersService],
+  exports: [SharedUsersService, JwtModule],
 })
 export class UsersModule {}

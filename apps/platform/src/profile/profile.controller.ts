@@ -15,7 +15,7 @@ import { ApiBearerAuth, ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
 import { apiExceptionResponse } from '@libs/common/src/exceptions/exception.decorator';
 import { JwtGuard } from '@libs/common/src/auth/guard/jwt.guard';
 import { getUser } from '@libs/common/src/users/decorators/getuser.decorator';
-import { User } from '@prisma/client';
+import { OldUser } from '@prisma/client';
 import { ProfileEntity } from './entity/profile.entity';
 
 @Controller('profile')
@@ -34,7 +34,7 @@ export class ProfileController {
     description: 'The record has been successfully created.',
     type: ProfileEntity,
   })
-  create(@getUser() user: User, @Body() createProfileDto: CreateProfileDto) {
+  create(@getUser() user: OldUser, @Body() createProfileDto: CreateProfileDto) {
     return this.profileService.create(user, createProfileDto);
   }
 

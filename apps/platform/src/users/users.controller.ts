@@ -8,7 +8,7 @@ import {
   Body,
   UseGuards,
 } from '@nestjs/common';
-import { UsersService } from '@libs/common/src/users/users.service';
+import { SharedUsersService } from '@libs/common/src/users/users.service';
 import {
   ApiBearerAuth,
   ApiCreatedResponse,
@@ -20,7 +20,7 @@ import { UserObject } from './entity/UserObject.entity';
 // import { UpdateUserDto } from './dto/UpdateUserDto';
 // import { CreateUserDto } from './dto/CreateUserDto';
 import { JwtGuard } from '@libs/common/src/auth/guard/jwt.guard';
-import { LocalAuthSignupDto } from '@libs/common/src/users/dto/local-startegy/user-signup.dto';
+import { LocalAuthSignupDto } from '@libs/common/src/auth/dto/customers/local-startegy/user-signup.dto';
 import { checkAbilities } from '@libs/common/src/ability/decorators/cehckAbility.decorator';
 import { AbilitiesGuard } from '@libs/common/src/ability/guard/abilities.guard';
 
@@ -29,7 +29,7 @@ import { AbilitiesGuard } from '@libs/common/src/ability/guard/abilities.guard';
 @Controller('users')
 @ApiTags('User')
 export class UsersController {
-  constructor(private usersService: UsersService) {}
+  constructor(private usersService: SharedUsersService) {}
 
   /**
    *

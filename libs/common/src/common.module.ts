@@ -10,7 +10,7 @@ import { AbilityModule } from './ability/ability.module';
   imports: [
     FirebaseModule,
     PrismaModule,
-    UsersModule,
+    // UsersModule,
     SharedAuthModule,
     AbilityModule,
   ],

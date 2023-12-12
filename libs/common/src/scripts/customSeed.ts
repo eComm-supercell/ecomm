@@ -6,7 +6,7 @@ export async function customSeed() {
 
   //replace this sample code to populate your database
   //with data that is required for your application to start
-  await client.user.update({
+  await client.oldUser.update({
     where: { username: username },
     data: {
       username,

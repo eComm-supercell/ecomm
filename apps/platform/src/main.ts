@@ -41,13 +41,14 @@ async function bootstrap() {
     .addTag('Tags')
     .addTag('Notifications')
     .addTag('Notification Token')
-    .addTag('Authentication')
     .addTag('User')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
   // Start app
-  await app.listen(configService.get<number>('PLATFORM_PORT') || 3000);
+  await app.listen(configService.get<number>('PLATFORM_PORT') || 3000, () => {
+    console.log('Platform service is running on port 3000');
+  });
 }
 void bootstrap();

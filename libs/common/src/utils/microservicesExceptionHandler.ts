@@ -10,5 +10,7 @@ import { AppCustomException } from '../exceptions/custom-exception';
  */
 export const handleMicroserviceExceptions = () =>
   catchError((error: { status: number; message: ErrorMessages }) => {
+    console.log('TCP level', error);
+
     throw new AppCustomException(error.message);
   });

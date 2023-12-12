@@ -1,6 +1,6 @@
 import { ApiProperty, PickType } from '@nestjs/swagger';
 import { IsNumber } from 'class-validator';
-import { LocalAuthSignupDto } from '@libs/common/src/users/dto/local-startegy/user-signup.dto';
+import { LocalAuthSignupDto } from '@libs/common/src/auth/dto/customers/local-startegy/user-signup.dto';
 
 export class UpdateAdminUserDto extends PickType(LocalAuthSignupDto, [
   'firstName',

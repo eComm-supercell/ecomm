@@ -57,6 +57,7 @@ export class AppCustomException extends HttpException {
     // Detect new errors that are not one of App Custom Errors (Thrown by app custom exceptions)
     if (appDefinedErrors.indexOf(customError) === -1) {
       errorObject.details = customError;
+
       customError = 'unidentifiedThrownException';
     }
 

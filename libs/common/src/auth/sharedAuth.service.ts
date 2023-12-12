@@ -1,13 +1,17 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as argon from 'argon2';
-import { UsersService } from '../users/users.service';
+import { SharedUsersService } from '../users/users.service';
 
 @Injectable()
 export class SharedAuthService {
   constructor(
     private jwtTokenService: JwtService,
-    private userService: UsersService,
+    private userService: SharedUsersService,
   ) {}
 
   /***
@@ -43,5 +47,53 @@ export class SharedAuthService {
         },
       };
     }
+  }
+
+  /**
+   * Hash password using argon2
+   * @param password
+   * @returns
+   */
+  hashPassword(password: string) {
+    try {
+      return argon.hash(password); // hashed password
+    } catch (error) {
+      console.error(error);
+      throw new BadRequestException('Error hashing password');
+    }
+  }
+
+  /**
+   *
+   * Verify password using argon2
+   * @param inputPassword
+   * @param hashedPassword
+   * @returns
+   */
+  async verifyPassword(inputPassword: string, hashedPassword: string) {
+    try {
+      const passwordMatches = await argon.verify(hashedPassword, inputPassword);
+      return passwordMatches;
+    } catch (error) {
+      console.error('Error verifying password:', error);
+      throw new BadRequestException('Error verifying password');
+    }
+  }
+
+  /**
+   * Generate JWT token.
+   *
+   * *NOTE*: this method is `payload` agnostic !! It will only spread the `payload` object and use a shared system wide `secret` value.
+   *
+   * @param payload
+   * @returns
+   */
+  async generateJWtToken(payload: any) {
+    return this.jwtTokenService.signAsync(
+      { ...payload },
+      {
+        secret: process.env.JWT_SECRET,
+      },
+    );
   }
 }

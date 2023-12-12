@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider      = "prisma-client-js"
   binaryTargets = ["native", "debian-openssl-3.0.x"]
@@ -11,29 +8,132 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Profile {
+enum UserType {
+  CUSTOMER
+  ADMIN
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
+enum AuthenticationStartegy {
+  NATIVE
+  OAUTH
+}
+
+enum AuthenticationIdentifier {
+  GOOGLE
+}
+
+model user {
+  createdAt               DateTime               @default(now()) @db.Timestamp(6)
+  updatedAt               DateTime               @default(now()) @db.Timestamp(6)
+  deletedAt               DateTime?              @db.Timestamp(6)
+  identifier              String?                @db.VarChar
+  verified                Boolean                @default(false)
+  lastLogin               DateTime?              @db.Timestamp(6)
+  id                      Int                    @id() @default(autoincrement())
+  phoneNumber             String?                @unique() @db.VarChar
+  emailAddress            String?                @unique() @db.VarChar
+  profile                 profile?
+  authentication_method   authentication_method? @relation(fields: [authentication_methodId], references: [id])
+  authentication_methodId Int?                   @unique()
+  session                 session[]
+  user_roles_role         user_roles_role[]
+}
+
+model profile {
+  createdAt DateTime  @default(now()) @db.Timestamp(6)
+  updatedAt DateTime  @default(now()) @db.Timestamp(6)
+  deletedAt DateTime? @db.Timestamp(6)
+  firstName String    @db.VarChar
+  lastName  String?   @db.VarChar
+  gender    Gender
+  id        Int       @id() @default(autoincrement())
+  userId    Int?      @unique()
+  user      user?     @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model authentication_method {
+  createdAt             DateTime                  @default(now()) @db.Timestamp(6)
+  updatedAt             DateTime                  @default(now()) @db.Timestamp(6)
+  identifier            AuthenticationIdentifier?
+  passwordHash          String?                   @db.VarChar
+  verificationToken     String?                   @db.VarChar
+  passwordResetToken    String?                   @db.VarChar
+  identifierChangeToken String?                   @db.VarChar
+  pendingIdentifier     String?                   @db.VarChar
+  strategy              AuthenticationStartegy?
+  externalIdentifier    String?                   @db.VarChar
+  metadata              String?
+  id                    Int                       @id() @default(autoincrement())
+  type                  UserType?
+  user                  user?
+}
+
+model session {
+  createdAt              DateTime @default(now()) @db.Timestamp(6)
+  updatedAt              DateTime @default(now()) @db.Timestamp(6)
+  token                  String   @unique() @db.VarChar
+  expires                DateTime @db.Timestamp(6)
+  invalidated            Boolean
+  authenticationStrategy String?  @db.VarChar
+  id                     Int      @id() @default(autoincrement())
+  type                   String   @db.VarChar
+  userId                 Int?
+  user                   user?    @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([userId])
+  @@index([type])
+}
+
+model role {
+  createdAt       DateTime          @default(now()) @db.Timestamp(6)
+  updatedAt       DateTime          @default(now()) @db.Timestamp(6)
+  code            String            @db.VarChar
+  description     String            @db.VarChar
+  permissions     String
+  id              Int               @id() @default(autoincrement())
+  user_roles_role user_roles_role[]
+}
+
+model user_roles_role {
+  userId Int
+  roleId Int
+  role   role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  user   user @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, roleId])
+  @@index([roleId])
+  @@index([userId])
+}
+
+// OLD db reference starts here
+model OldProfile {
   id          Int       @id @default(autoincrement())
   dateOfBirth DateTime?
   mobile      String?
   gender      String?
   addressId   Int?
   address     Address[]
-  user        User      @relation(fields: [userId], references: [id])
+  user        OldUser   @relation(fields: [userId], references: [id])
   userId      Int       @unique
 }
 
-model User {
+model OldUser {
   id              Int       @id @default(autoincrement())
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @default(now())
   emailVerifiedAt DateTime?
 
-  email    String?  @unique
-  username String?  @unique
+  email    String?     @unique
+  username String?     @unique
   lname    String?
   fname    String?
   password String?
-  profile  Profile?
+  profile  OldProfile?
 
   // values: google, facebook
   provider     String?
@@ -69,7 +169,7 @@ model DeliveryBoy {
   suspendReason  String?
   suspendDate    DateTime?
   depitThreshold Decimal?
-  user           User?
+  user           OldUser?
   userId         Int?      @unique
 }
 
@@ -79,7 +179,7 @@ model Wallet {
   updatedAt DateTime @default(now())
 
   amount            Decimal             @default(0)
-  user              User?
+  user              OldUser?
   walletTransaction WalletTransaction[]
 }
 
@@ -123,20 +223,20 @@ model Province {
 }
 
 model Address {
-  id          Int      @id @default(autoincrement())
+  id          Int        @id @default(autoincrement())
   street      String?
   cityId      Int?
-  city        City?    @relation(fields: [cityId], references: [id])
+  city        City?      @relation(fields: [cityId], references: [id])
   provinceId  Int
-  province    Province @relation(fields: [provinceId], references: [id])
+  province    Province   @relation(fields: [provinceId], references: [id])
   order       Order[]
   latitude    Float?
   longitude   Float?
   buildingNo  String?
   floorNo     String?
   apartmentNo String?
-  profile     Profile  @relation(fields: [profileId], references: [id])
-  profileId   Int      @unique
+  profile     OldProfile @relation(fields: [profileId], references: [id])
+  profileId   Int        @unique
 }
 
 model Category {
@@ -146,7 +246,7 @@ model Category {
   parentId     Int?
   categoryLink String?
   sortOrder    Int       @default(0)
-  author       User?     @relation(fields: [authorId], references: [id])
+  author       OldUser?  @relation(fields: [authorId], references: [id])
   authorId     Int?
   published    Boolean   @default(false)
   name         String    @db.VarChar(255)
@@ -192,7 +292,7 @@ model Product {
   brand                    String?    @db.VarChar(255)
   description              String?    @db.Text
   published                Boolean    @default(true)
-  author                   User       @relation(fields: [authorId], references: [id])
+  author                   OldUser    @relation(fields: [authorId], references: [id])
   authorId                 Int
   shopId                   Int?
   shop                     Shop?      @relation(fields: [shopId], references: [id], onDelete: Cascade)
@@ -292,12 +392,12 @@ model ProductVariantImage {
   sortOrder Int @default(0)
 }
 
-// User can create own shop to selling products
+// OldUser can create own shop to selling products
 model Shop {
   id          Int       @id @default(autoincrement())
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @default(now())
-  mangers     User[]
+  mangers     OldUser[]
   shopType    ShopType  @default(retaile)
   openTime    String    @default("00:00")
   closeTime   String    @default("23:59")
@@ -402,7 +502,7 @@ model Order {
   addressId Int?
   address   Address? @relation(fields: [addressId], references: [id])
 
-  user             User?           @relation(fields: [userId], references: [id])
+  user             OldUser?        @relation(fields: [userId], references: [id])
   userId           Int?
   OrderItem        OrderItem[]
   paymentDetails   PaymentDetails? @relation(fields: [paymentDetailsId], references: [id])
@@ -457,7 +557,7 @@ model cart {
   quantity  Int
   product   Product? @relation(fields: [productId], references: [id])
   productId Int
-  user      User?    @relation(fields: [userId], references: [id])
+  user      OldUser? @relation(fields: [userId], references: [id])
   userId    Int
 }
 
@@ -504,7 +604,7 @@ model Notification {
   body      String
   type      String
   userId    Int
-  user      User     @relation(fields: [userId], references: [id])
+  user      OldUser  @relation(fields: [userId], references: [id])
   isRead    Boolean  @default(false)
   isDeleted Boolean  @default(false)
 }
@@ -515,7 +615,7 @@ model NotificationToken {
   updatedAt DateTime @default(now())
   token     String
   userId    Int
-  user      User     @relation(fields: [userId], references: [id])
+  user      OldUser  @relation(fields: [userId], references: [id])
 }
 
 model AuditLog {
@@ -535,7 +635,7 @@ model Coupon {
   code           String    @unique
   type           String // percentage, fixed
   isReferral     Boolean   @default(false)
-  referrer       User?     @relation(fields: [referrerId], references: [id])
+  referrer       OldUser?  @relation(fields: [referrerId], references: [id])
   referrerId     Int?
   value          Float?
   maxDiscount    Float?

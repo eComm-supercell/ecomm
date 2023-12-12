@@ -8,10 +8,7 @@
       {
         "name": "@nestjs/swagger",
         "options": {
-          "dtoFileNameSuffix": [
-            ".dto.ts",
-            ".entity.ts"
-          ],
+          "dtoFileNameSuffix": [".dto.ts", ".entity.ts"],
           "controllerFileNameSuffix": ".controller.ts",
           "classValidatorShim": true,
           "dtoKeyOfComment": "description",
@@ -42,13 +39,13 @@
         "tsConfigPath": "apps/platform/tsconfig.app.json"
       }
     },
-    "customers": {
+    "shops": {
       "type": "application",
-      "root": "apps/customers",
+      "root": "apps/shops",
       "entryFile": "main",
-      "sourceRoot": "apps/customers/src",
+      "sourceRoot": "apps/shops/src",
       "compilerOptions": {
-        "tsConfigPath": "apps/customers/tsconfig.app.json"
+        "tsConfigPath": "apps/shops/tsconfig.app.json"
       }
     },
     "authentication": {

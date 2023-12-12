@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import * as argon2 from 'argon2';
 import { PrismaService } from '@libs/common/src/prisma/prisma.service';
-import { LocalAuthSignupDto } from './dto/local-startegy/user-signup.dto';
+import { LocalAuthSignupDto } from '../auth/dto/customers/local-startegy/user-signup.dto';
 import {
   CustomerIdpSignupDto,
   CustomersSignupDto,
-} from './dto/customers-local-startegy/signup.dto';
+} from '../auth/dto/customers/customers-native-startegy/signup.dto';
 import Role from '@libs/common/src/enums/role.enum';
 import IdentityProviders from '@libs/common/src/enums/provider.enum';
 import { FirebaseService } from '@libs/common/src/firebase/firebase.service';
@@ -20,12 +20,106 @@ import {
 import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
-export class UsersService {
+export class SharedUsersService {
   constructor(
     private prisma: PrismaService,
     private firebase: FirebaseService,
     private jwtTokenService: JwtService,
   ) {}
+
+  /**
+   * Customers (Shops API)
+   */
+  /**
+   * Finds and returns Customer if exists via email.
+   * @param email
+   * @returns
+   */
+  async findCustomerByEmail(email: string) {
+    const existingUser = await this.prisma.user.findUniqueOrThrow({
+      where: {
+        emailAddress: email,
+      },
+      include: {
+        authentication_method: true,
+        profile: true,
+      },
+    });
+
+    const {
+      id,
+      createdAt,
+      emailAddress,
+      updatedAt,
+      verified,
+      profile: existingUserProfile,
+      authentication_method: existingUserAuthMethod,
+    } = existingUser;
+    if (existingUserProfile && existingUserAuthMethod) {
+      const {
+        firstName,
+        lastName,
+        gender,
+        id: existingUserProfileId,
+      } = existingUserProfile;
+      const { type, strategy, identifier } = existingUserAuthMethod;
+      return {
+        id,
+        createdAt,
+        updatedAt,
+        emailAddress,
+        verified,
+        firstName,
+        lastName,
+        gender,
+        profileId: existingUserProfileId,
+        userType: type,
+        authenticationMethod: strategy,
+        identifier,
+      };
+    }
+  }
+
+  /**
+   * Creates a new customer user.
+   * @param email
+   * @param name
+   */
+  async createCustomerByEmailAndName(email: string, name: string) {
+    // create user
+    const newUser = await this.prisma.user.create({
+      data: {
+        emailAddress: email,
+      },
+    });
+
+    // add profile
+    await this.prisma.profile.create({
+      data: {
+        firstName: name,
+        gender: 'MALE',
+        user: {
+          connect: {
+            id: newUser.id,
+          },
+        },
+      },
+    });
+
+    // add auth method data
+    await this.prisma.authentication_method.create({
+      data: {
+        strategy: 'OAUTH',
+        type: 'CUSTOMER',
+        identifier: 'GOOGLE',
+        user: {
+          connect: {
+            id: newUser.id,
+          },
+        },
+      },
+    });
+  }
 
   /**
    * Unified select fields for local users
@@ -49,13 +143,14 @@ export class UsersService {
       },
     },
   };
+
   /**
    * Create Admin account (Local Strategy) using usernmae and password
    *
    */
   async createAdminAccount(data: LocalAuthSignupDto) {
     // Create user
-    const response = await this.prisma.user.create({
+    const response = await this.prisma.oldUser.create({
       data: {
         // Empty wallet and profile
         wallet: {
@@ -93,7 +188,7 @@ export class UsersService {
     const { uid, email, phoneNumber } = firebaseUser;
 
     // Add user to system database
-    const response = await this.prisma.user.create({
+    const response = await this.prisma.oldUser.create({
       data: {
         // Empty wallet and profile
         wallet: {
@@ -147,7 +242,7 @@ export class UsersService {
       }
 
       // find user in system database
-      const userExist = await this.prisma.user.findUnique({
+      const userExist = await this.prisma.oldUser.findUnique({
         where: { email: user.email || undefined },
       });
       if (userExist) {
@@ -170,7 +265,7 @@ export class UsersService {
       }
 
       // Add user to system database if not exist
-      const response = await this.prisma.user.create({
+      const response = await this.prisma.oldUser.create({
         data: {
           // Empty wallet and profile
           wallet: {
@@ -210,7 +305,7 @@ export class UsersService {
 
   findOne(id: number) {
     // TODO: add DB view to get user profile
-    return this.prisma.user.findUnique({
+    return this.prisma.oldUser.findUnique({
       where: { id },
       select: {
         id: true,
@@ -237,7 +332,7 @@ export class UsersService {
    *
    */
   async findLocalUserByUsername(username: string) {
-    return await this.prisma.user.findUnique({
+    return await this.prisma.oldUser.findUnique({
       where: { username },
       select: this.localUserSelectFields,
     });
@@ -246,21 +341,6 @@ export class UsersService {
     return await this.prisma.user.findUnique({
       where: { id },
       select: this.localUserSelectFields,
-    });
-  }
-
-  /**
-   * Customers (Phone Numbers as username)
-   *
-   */
-
-  /**
-   *
-   *
-   */
-  async findCustomerByPhone(phone: string) {
-    return await this.prisma.user.findUnique({
-      where: { username: phone },
     });
   }
 }
