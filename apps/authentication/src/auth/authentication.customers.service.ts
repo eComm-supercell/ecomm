@@ -95,22 +95,17 @@ export class CustomersAuthService {
       },
     });
 
-    try {
-      // create user profile (Customer)
-      await this.prisma.profile.create({
-        data: {
-          firstName,
-          lastName,
-          gender,
-          user: {
-            connect: { id: user.id },
-          },
+    // create user profile (Customer)
+    await this.prisma.profile.create({
+      data: {
+        firstName,
+        lastName,
+        gender,
+        user: {
+          connect: { id: user.id },
         },
-      });
-    } catch (error) {
-      console.log(error);
-      throw new ForbiddenException(error.message);
-    }
+      },
+    });
 
     // TODO: 1- send email verification
     // TODO: 2- send welcome email
