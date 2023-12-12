@@ -1,9 +1,9 @@
-import { Controller } from '@nestjs/common';
+import { Controller, UseFilters } from '@nestjs/common';
 import crypto from 'crypto';
 import string_decoder from 'string_decoder';
 import { AdminsAuthService } from './authentication.admins.service';
 import { CustomersAuthService } from './authentication.customers.service';
-import { MessagePattern } from '@nestjs/microservices';
+import { MessagePattern, RpcException } from '@nestjs/microservices';
 import { LocalAuthSignupDto } from '@libs/common/src/auth/dto/customers/local-startegy/user-signup.dto';
 import {
   CustomerIdpSignupDto,
@@ -11,6 +11,7 @@ import {
   CustomersSignupDto,
 } from '@libs/common/src/auth/dto/customers/customers-native-startegy/signup.dto';
 import { SharedUsersService } from '@libs/common/src/users/users.service';
+import { ExceptionFilter } from '@libs/common/src/exceptions/custom-rcp-exception.filter';
 
 @Controller('auth')
 export class AuthController {
@@ -54,15 +55,26 @@ export class AuthController {
    */
   @MessagePattern({ cmd: 'signupCustomerByPhone' })
   async signupCustomerByPhone(body: CustomersSignupDto) {
-    return await this.customersAuthService.signupCustomerByPhone(body);
+    try {
+      return await this.customersAuthService.signupCustomerByPhone(body);
+    } catch (error) {
+      // NOTE: Final error comming from microservice MUST always be RpcException
+      throw new RpcException(error);
+    }
   }
 
   /**
    * Create new Customer account using email & password.
    */
+  @UseFilters(new ExceptionFilter())
   @MessagePattern({ cmd: 'signupCustomerByEmail' })
   async signupCustomerByEmail(body: CustomersEmailPasswordSignupDto) {
-    return await this.customersAuthService.signupCustomerByEmail(body);
+    try {
+      return await this.customersAuthService.signupCustomerByEmail(body);
+    } catch (error) {
+      // NOTE: Final error comming from microservice MUST always be RpcException
+      throw new RpcException(error);
+    }
   }
 
   /**
