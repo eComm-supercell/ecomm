@@ -81,9 +81,9 @@ export class AuthController {
    * Create and signup new Customers using google account. This method is used for system accounts utilizing google authentication method.
    *
    */
-  @MessagePattern({ cmd: 'signupCustomerByGoogle' })
+  @MessagePattern({ cmd: 'customerIdpSignin' })
   async signupCustomerByGoogle(body: CustomerIdpSignupDto) {
-    return await this.userService.customerIdpSignin(body);
+    return await this.customersAuthService.customerIdpSignin(body);
   }
 
   /**

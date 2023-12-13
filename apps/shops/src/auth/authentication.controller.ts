@@ -74,7 +74,7 @@ export class AuthController {
   }
 
   /**
-   * Initiates the ```Google OAuth``` authentication process.
+   * Initiates the ```Google OAuth``` authentication process for  `WEB` clients (browsers).
    * The user will be redirected to the ```Google OAuth``` authorization page.
    * After successful authorization, Google will redirect the user back to `/auth/google/callback`.
    *

@@ -1,8 +1,16 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import crypto from 'crypto';
+import { JwtService } from '@nestjs/jwt';
 import string_decoder from 'string_decoder';
 import { exclude } from '@libs/common/src/utils/exclude';
 import { SharedUsersService } from '@libs/common/src/users/users.service';
+import {
+  GoogleAuthProvider,
+  OAuthProvider,
+  User,
+  getAuth,
+  signInWithCredential,
+} from 'firebase/auth';
 import {
   CustomerIdpSignupDto,
   CustomersEmailPasswordSignupDto,
@@ -17,6 +25,7 @@ export class CustomersAuthService {
     private userService: SharedUsersService,
     private prisma: PrismaService,
     private sharedAuthService: SharedAuthService,
+    private jwtTokenService: JwtService,
   ) {}
 
   async me(userId: number) {
@@ -118,8 +127,61 @@ export class CustomersAuthService {
    *
    *
    */
-  async customerIdpSignin(body: CustomerIdpSignupDto) {
-    return await this.userService.customerIdpSignin(body);
+  async customerIdpSignin(data: CustomerIdpSignupDto) {
+    const auth = getAuth(); // firebase auth
+    let user: User;
+
+    const { idToken, provider } = data; // destruct data
+
+    if (provider === 'google') {
+      // Build Firebase credential with the Google ID token.
+      const authCredential = GoogleAuthProvider.credential(data.idToken);
+      const signinResponse = await signInWithCredential(auth, authCredential);
+      user = signinResponse.user;
+    } else {
+      // Build Firebase credential with the Apple ID token.
+      const apple = new OAuthProvider('apple.com');
+      const authCredential = apple.credential({
+        idToken: idToken,
+        rawNonce: 'unhashedNonce',
+      });
+      const signinResponse = await signInWithCredential(auth, authCredential);
+      user = signinResponse.user;
+    }
+
+    // find user in system database
+    const userExist = await this.userService.findCustomerByEmail(
+      user.email as string,
+    );
+    if (userExist) {
+      return {
+        // Generate JWT token
+        token: this.sharedAuthService.generateJWtToken({
+          id: userExist.id,
+          email: userExist.emailAddress,
+        }),
+        ...userExist,
+      };
+    }
+
+    // Add user to system database if not exist
+    await this.userService.createCustomerByEmailAndName(
+      user.email as string,
+      user.displayName as string,
+    );
+    const newUser = await this.userService.findCustomerByEmail(
+      user.email as string,
+    );
+
+    if (newUser) {
+      return {
+        token: await this.sharedAuthService.generateJWtToken({
+          id: newUser.id,
+          email: newUser.emailAddress,
+        }),
+        ...newUser,
+      };
+    }
   }
 
   /**
