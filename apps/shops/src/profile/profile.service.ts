@@ -1,26 +1,26 @@
 import { Injectable } from '@nestjs/common';
-import { CreateProfileDto } from './dto/create-profile.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
+import { SystemUser } from '@libs/common/src/users/decorators/getuser.decorator';
+import { PrismaService } from '@libs/common/src/prisma/prisma.service';
 
 @Injectable()
 export class ProfileService {
-  create(createProfileDto: CreateProfileDto) {
-    return 'This action adds a new profile';
+  constructor(private readonly prisma: PrismaService) {}
+  async findOne(user: SystemUser) {
+    return await this.prisma.profile.findUnique({
+      where: { id: user.profileId },
+    });
   }
 
-  findAll() {
-    return `This action returns all profile`;
-  }
+  async update(user: SystemUser, updateProfileDto: UpdateProfileDto) {
+    console.log('updateProfileDto', updateProfileDto);
 
-  findOne(id: number) {
-    return `This action returns a #${id} profile`;
-  }
-
-  update(id: number, updateProfileDto: UpdateProfileDto) {
-    return `This action updates a #${id} profile`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} profile`;
+    await this.prisma.profile.update({
+      where: { id: user.profileId },
+      data: {
+        ...updateProfileDto,
+      },
+    });
+    return { sucess: true };
   }
 }
