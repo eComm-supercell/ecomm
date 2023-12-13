@@ -124,8 +124,8 @@ export class AuthController {
   }
 
   /**
-   * Sign in Customer with OAuth. Currently only Google & Apple OAuth is supported. After successful signin on the client side,
-   * the user account id token is sent for validation. If the user is already registered, the user data will be returned along with a system JWT token.
+   * Sign in Customer with `OAuth`. Currently only `Google & Apple` are supported. After successful signin on the client side,
+   * the user account `id` & `token` is sent for validation. If the user is already registered, the user data will be returned along with a system JWT token.
    * If the user is not registered, the user will be registered and the user data will be returned also with the system JWT token.
    *
    */
