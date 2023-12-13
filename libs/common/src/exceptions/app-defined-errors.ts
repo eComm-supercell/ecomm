@@ -3,6 +3,7 @@
  */
 export const appDefinedErrors = [
   'badRequest',
+  'loginFailed',
   'emailAlreadyExists',
   'usernameAlreadyExists',
   'userNotProvided',
@@ -10,7 +11,6 @@ export const appDefinedErrors = [
   'userNotFound',
   'provinceNameDuplicated',
   'cityNameDuplicated',
-  'passwordNotMatched',
   'createFirebaseUserFailed',
   'googleAccountInvalid',
 ];
@@ -21,6 +21,7 @@ export const appDefinedErrors = [
 export type ErrorMessages =
   | 'badRequest'
   | 'unidentifiedThrownException'
+  | 'loginFailed'
   | 'emailAlreadyExists'
   | 'usernameAlreadyExists'
   | 'userNotProvided'
@@ -28,6 +29,5 @@ export type ErrorMessages =
   | 'userNotFound'
   | 'provinceNameDuplicated'
   | 'cityNameDuplicated'
-  | 'passwordNotMatched'
   | 'createFirebaseUserFailed'
   | 'googleAccountInvalid';

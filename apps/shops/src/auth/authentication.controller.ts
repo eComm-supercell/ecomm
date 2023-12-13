@@ -7,6 +7,7 @@ import {
   Body,
 } from '@nestjs/common';
 import {
+  ApiBearerAuth,
   // ApiBearerAuth,
   ApiBody,
   ApiCreatedResponse,
@@ -19,7 +20,6 @@ import {
 // import { JwtGuard } from '@libs/common/src/auth/guard/jwt.guard';
 import { apiExceptionResponse } from '@libs/common/src/exceptions/exception.decorator';
 import { AuthService } from './authentication.service';
-import { CustomersPhoneAuthGuard } from '@libs/common/src/auth/guard/customers/customers-phone.guard';
 import { LocalAuthResponseDto } from '@libs/common/src/auth/dto/customers/local-startegy/user-login.dto';
 // import { getLocalUser } from '@libs/common/src/users/decorators/getuser.decorator';
 import {
@@ -27,8 +27,6 @@ import {
   CustomersEmailPasswordSignupDto,
   CustomersSignupDto,
 } from '@libs/common/src/auth/dto/customers/customers-native-startegy/signup.dto';
-import { CustomerPhoneLoginDto } from '@libs/common/src/auth/dto/customers/customers-phone-strategy/login.dto';
-import { CustomersNativeAuthGuard } from '@libs/common/src/auth/guard/customers/customers-native.guard';
 import { CustomersGoogleAuthGuard } from '@libs/common/src/auth/guard/customers/customers-google-oauth.guard';
 import { SharedAuthService } from '@libs/common/src/auth/sharedAuth.service';
 import {
@@ -37,8 +35,11 @@ import {
 } from '@libs/common/src/auth/dto/customers/customers-oauth-startegy/oauth-response.dto';
 import { CustomersNativeAuthResponse } from '@libs/common/src/auth/dto/customers/customers-native-startegy/login-response.dto';
 import { CustomerNativeLoginDto } from '@libs/common/src/auth/dto/customers/customers-native-startegy/login.dto';
+import { CustomersNativeAuthGuard } from '@libs/common/src/auth/guard/customers/customers-native.guard';
+import { CustomersJWTAuthGuard } from '@libs/common/src/auth/guard/customers/customers-jwt-native.guard';
 
 @ApiTags('Authentication')
+@ApiBearerAuth()
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -116,14 +117,6 @@ export class AuthController {
     return this.authService.signupCustomerByPhone(body);
   }
 
-  /**
-   * Login using phone number. This method is used for customer accounts utilizing phone number authentication method.
-   */
-  @UseGuards(CustomersPhoneAuthGuard)
-  @ApiBody({ type: CustomerPhoneLoginDto })
-  @ApiCreatedResponse({
-    type: LocalAuthResponseDto,
-  })
   @apiExceptionResponse()
   @Post('/phone/login')
   customerLogin(@Request() req: any) {
@@ -157,5 +150,11 @@ export class AuthController {
   })
   getAppleNonce() {
     return { hashedNonce: this.authService.generateNonce(32) };
+  }
+
+  @UseGuards(CustomersJWTAuthGuard)
+  @Get('/me')
+  test(@Request() req) {
+    return req.user;
   }
 }

@@ -1,6 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
 import string_decoder from 'string_decoder';
-import { LocalAuthSignupDto } from '@libs/common/src/auth/dto/customers/local-startegy/user-signup.dto';
 import crypto from 'crypto';
 import {
   CustomerIdpSignupDto,
@@ -11,6 +10,8 @@ import { SERVICE_NAMES } from '@libs/common/src/constants/service-names';
 import { ClientProxy } from '@nestjs/microservices';
 import { handleMicroserviceExceptions } from '@libs/common/src/utils/microservicesExceptionHandler';
 import { lastValueFrom } from 'rxjs';
+import { CustomerNativeLoginDto } from '@libs/common/src/auth/dto/customers/customers-native-startegy/login.dto';
+import { ServiceMessages } from '@libs/common/src/constants/service-messages';
 
 @Injectable()
 export class AuthService {
@@ -19,61 +20,23 @@ export class AuthService {
   ) {}
 
   /**
-   *
+   * Signup customers using email and password
    */
   async signupCustomerByEmail(body: CustomersEmailPasswordSignupDto) {
     return await lastValueFrom(
       this.clientAuth
-        .send({ cmd: 'signupCustomerByEmail' }, body)
+        .send({ cmd: ServiceMessages.auth.customers.signupByEmail }, body)
         .pipe(handleMicroserviceExceptions()),
     );
   }
 
   /**
-   * Retrieve user information (Profile)
-   *
+   * Login customers using email and password
    */
-  async me(userId: number) {
+  async customerNativeLogin(body: CustomerNativeLoginDto) {
     return await lastValueFrom(
       this.clientAuth
-        .send({ cmd: 'me' }, { userId })
-        .pipe(handleMicroserviceExceptions()),
-    );
-  }
-  /**
-   * Validate user using username and password. This method is used for system accounts utilizing username and password authentication method. Currently admin accounts are the only system account following this pattern.
-   * This method is used by Local Strategy
-   *
-   */
-  async validateUser(username: string, password: string) {
-    return await lastValueFrom(
-      this.clientAuth
-        .send({ cmd: 'validateUser' }, { username, password })
-        .pipe(handleMicroserviceExceptions()),
-    );
-  }
-
-  /**
-   * validate user using phone number. This method is used for system accounts utilizing phone number and password authentication method. Currently customer accounts are the only system account following this pattern. `NOTE:` password is ignored.
-   *
-   */
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async validateCustomer(phone: string, _password?: string) {
-    return await lastValueFrom(
-      this.clientAuth
-        .send({ cmd: 'validateCustomer' }, { phone, password: _password })
-        .pipe(handleMicroserviceExceptions()),
-    );
-  }
-
-  /**
-   * Create and signup new users using username and password. This method is used for system accounts utilizing username and password authentication method. Currently admin accounts are the only system account following this pattern.
-   *
-   */
-  async adminSignup(body: LocalAuthSignupDto) {
-    return await lastValueFrom(
-      this.clientAuth
-        .send({ cmd: 'adminSignup' }, body)
+        .send({ cmd: ServiceMessages.auth.customers.loginByEmail }, body)
         .pipe(handleMicroserviceExceptions()),
     );
   }
@@ -85,7 +48,7 @@ export class AuthService {
   async signupCustomerByPhone(body: CustomersSignupDto) {
     return await lastValueFrom(
       this.clientAuth
-        .send({ cmd: 'signupCustomerByPhone' }, body)
+        .send({ cmd: ServiceMessages.auth.customers.signupByPhone }, body)
         .pipe(handleMicroserviceExceptions()),
     );
   }
@@ -98,7 +61,7 @@ export class AuthService {
   async customerIdpSignin(body: CustomerIdpSignupDto) {
     return await lastValueFrom(
       this.clientAuth
-        .send({ cmd: 'customerIdpSignin' }, body)
+        .send({ cmd: ServiceMessages.auth.customers.IDPsignin }, body)
         .pipe(handleMicroserviceExceptions()),
     );
   }
@@ -117,4 +80,53 @@ export class AuthService {
     }
     return nonce.slice(0, length);
   }
+
+  // /**
+  //  * Retrieve user information (Profile)
+  //  *
+  //  */
+  // async me(userId: number) {
+  //   return await lastValueFrom(
+  //     this.clientAuth
+  //       .send({ cmd: 'me' }, { userId })
+  //       .pipe(handleMicroserviceExceptions()),
+  //   );
+  // }
+  // /**
+  //  * Validate user using username and password. This method is used for system accounts utilizing username and password authentication method. Currently admin accounts are the only system account following this pattern.
+  //  * This method is used by Local Strategy
+  //  *
+  //  */
+  // async validateUser(username: string, password: string) {
+  //   return await lastValueFrom(
+  //     this.clientAuth
+  //       .send({ cmd: 'validateUser' }, { username, password })
+  //       .pipe(handleMicroserviceExceptions()),
+  //   );
+  // }
+
+  /**
+   * validate user using phone number. This method is used for system accounts utilizing phone number and password authentication method. Currently customer accounts are the only system account following this pattern. `NOTE:` password is ignored.
+   *
+   */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // async validateCustomer(phone: string, _password?: string) {
+  //   return await lastValueFrom(
+  //     this.clientAuth
+  //       .send({ cmd: 'validateCustomer' }, { phone, password: _password })
+  //       .pipe(handleMicroserviceExceptions()),
+  //   );
+  // }
+
+  // /**
+  //  * Create and signup new users using username and password. This method is used for system accounts utilizing username and password authentication method. Currently admin accounts are the only system account following this pattern.
+  //  *
+  //  */
+  // async adminSignup(body: LocalAuthSignupDto) {
+  //   return await lastValueFrom(
+  //     this.clientAuth
+  //       .send({ cmd: 'adminSignup' }, body)
+  //       .pipe(handleMicroserviceExceptions()),
+  //   );
+  // }
 }

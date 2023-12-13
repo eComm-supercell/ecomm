@@ -4,56 +4,55 @@ import string_decoder from 'string_decoder';
 import { AdminsAuthService } from './authentication.admins.service';
 import { CustomersAuthService } from './authentication.customers.service';
 import { MessagePattern, RpcException } from '@nestjs/microservices';
-import { LocalAuthSignupDto } from '@libs/common/src/auth/dto/customers/local-startegy/user-signup.dto';
 import {
   CustomerIdpSignupDto,
   CustomersEmailPasswordSignupDto,
   CustomersSignupDto,
 } from '@libs/common/src/auth/dto/customers/customers-native-startegy/signup.dto';
-import { SharedUsersService } from '@libs/common/src/users/users.service';
 import { ExceptionFilter } from '@libs/common/src/exceptions/custom-rcp-exception.filter';
-
+import { CustomerNativeLoginDto } from '@libs/common/src/auth/dto/customers/customers-native-startegy/login.dto';
+import { ServiceMessages } from '@libs/common/src/constants/service-messages';
+@UseFilters(new ExceptionFilter())
 @Controller('auth')
 export class AuthController {
   constructor(
     private readonly adminsAuthService: AdminsAuthService,
-    private readonly userService: SharedUsersService,
     private readonly customersAuthService: CustomersAuthService,
   ) {}
 
-  /**
-   * Retrieve user information (Profile)
-   *
-   */
-  @MessagePattern({ cmd: 'login' })
-  async me(userId: number) {
-    return await this.adminsAuthService.me(userId);
-  }
+  // /**
+  //  * Retrieve user information (Profile)
+  //  *
+  //  */
+  // @MessagePattern({ cmd: 'login' })
+  // async me(userId: number) {
+  //   return await this.adminsAuthService.me(userId);
+  // }
 
-  /**
-   * Validate user using username and password. This method is used for system accounts utilizing username and password authentication method. Currently admin accounts are the only system account following this pattern.
-   * This method is used by Local Strategy
-   *
-   */
-  @MessagePattern({ cmd: 'validateUser' })
-  async validateUser(username: string, password: string) {
-    return await this.adminsAuthService.validateUser(username, password);
-  }
+  // /**
+  //  * Validate user using username and password. This method is used for system accounts utilizing username and password authentication method. Currently admin accounts are the only system account following this pattern.
+  //  * This method is used by Local Strategy
+  //  *
+  //  */
+  // @MessagePattern({ cmd: 'validateUser' })
+  // async validateUser(username: string, password: string) {
+  //   return await this.adminsAuthService.validateUser(username, password);
+  // }
 
-  /**
-   * Create and signup new users using username and password. This method is used for system accounts utilizing username and password authentication method. Currently admin accounts are the only system account following this pattern.
-   *
-   */
-  @MessagePattern({ cmd: 'adminSignup' })
-  async adminSignup(body: LocalAuthSignupDto) {
-    return await this.adminsAuthService.adminSignup(body);
-  }
+  // /**
+  //  * Create and signup new users using username and password. This method is used for system accounts utilizing username and password authentication method. Currently admin accounts are the only system account following this pattern.
+  //  *
+  //  */
+  // @MessagePattern({ cmd: 'adminSignup' })
+  // async adminSignup(body: LocalAuthSignupDto) {
+  //   return await this.adminsAuthService.adminSignup(body);
+  // }
 
   /**
    * Create and signup new Customers using phone number and password. This method is used for system accounts utilizing phone number and password authentication method. Currently customer accounts are the only system account following this pattern.
    *
    */
-  @MessagePattern({ cmd: 'signupCustomerByPhone' })
+  @MessagePattern({ cmd: ServiceMessages.auth.customers.signupByPhone })
   async signupCustomerByPhone(body: CustomersSignupDto) {
     try {
       return await this.customersAuthService.signupCustomerByPhone(body);
@@ -66,8 +65,8 @@ export class AuthController {
   /**
    * Create new Customer account using email & password.
    */
-  @UseFilters(new ExceptionFilter())
-  @MessagePattern({ cmd: 'signupCustomerByEmail' })
+
+  @MessagePattern({ cmd: ServiceMessages.auth.customers.signupByEmail })
   async signupCustomerByEmail(body: CustomersEmailPasswordSignupDto) {
     try {
       return await this.customersAuthService.signupCustomerByEmail(body);
@@ -78,12 +77,30 @@ export class AuthController {
   }
 
   /**
+   * Login Customers using `email` & `password` (Native Strategy).
+   *
+   */
+  @MessagePattern({ cmd: ServiceMessages.auth.customers.loginByEmail })
+  async customerNativeLogin(body: CustomerNativeLoginDto) {
+    try {
+      return await this.customersAuthService.customerNativeLogin(body);
+    } catch (error) {
+      // NOTE: Final error comming from microservice MUST always be RpcException
+      throw new RpcException(error);
+    }
+  }
+
+  /**
    * Create and signup new Customers using google account. This method is used for system accounts utilizing google authentication method.
    *
    */
-  @MessagePattern({ cmd: 'customerIdpSignin' })
+  @MessagePattern({ cmd: ServiceMessages.auth.customers.IDPsignin })
   async signupCustomerByGoogle(body: CustomerIdpSignupDto) {
-    return await this.customersAuthService.customerIdpSignin(body);
+    try {
+      return await this.customersAuthService.customerIdpSignin(body);
+    } catch (error) {
+      throw new RpcException(error);
+    }
   }
 
   /**
@@ -100,13 +117,13 @@ export class AuthController {
     }
     return nonce.slice(0, length);
   }
-  /**
-   * validate user using phone number. This method is used for system accounts utilizing phone number and password authentication method. Currently customer accounts are the only system account following this pattern. `NOTE:` password is ignored.
-   *
-   */
-  @MessagePattern({ cmd: 'validateUser' })
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async validateCustomer(phone: string, _password?: string) {
-    return await this.customersAuthService.validateCustomer(phone);
-  }
+  // /**
+  //  * validate user using phone number. This method is used for system accounts utilizing phone number and password authentication method. Currently customer accounts are the only system account following this pattern. `NOTE:` password is ignored.
+  //  *
+  //  */
+  // @MessagePattern({ cmd: 'validateUser' })
+  // // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // async validateCustomer(phone: string, _password?: string) {
+  //   return await this.customersAuthService.validateCustomer(phone);
+  // }
 }
