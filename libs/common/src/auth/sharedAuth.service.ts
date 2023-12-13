@@ -1,11 +1,12 @@
 import {
   BadRequestException,
   Injectable,
-  UnauthorizedException,
+  // UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as argon from 'argon2';
 import { SharedUsersService } from '../users/users.service';
+import { AppCustomException } from '../exceptions/custom-exception';
 
 @Injectable()
 export class SharedAuthService {
@@ -14,40 +15,40 @@ export class SharedAuthService {
     private userService: SharedUsersService,
   ) {}
 
-  /***
-   * Validate user using username and password. This method is used for system accounts utilizing username and password authentication method. Currently admin accounts are the only system account following this pattern.
-   *
-   */
-  async validate(username: string, password: string): Promise<any> {
-    // Query user
-    const user = await this.userService.findLocalUserByUsername(username);
-    if (!user) {
-      throw new UnauthorizedException();
-    }
-    // Verify password
-    if (user.password) {
-      const isPasswordMatched = await argon.verify(user.password, password);
-      //  Return user if password matched
-      if (!isPasswordMatched) {
-        return null;
-      }
-      const { id, role, username: uniqueUsername } = user;
-      // Return user without password
-      return {
-        // Generate JWT token
-        token: this.jwtTokenService.sign(
-          { id, role },
-          {
-            secret: process.env.JWT_SECRET,
-          },
-        ),
-        user: {
-          ...user,
-          username: uniqueUsername,
-        },
-      };
-    }
-  }
+  // /***
+  //  * Validate user using username and password. This method is used for system accounts utilizing username and password authentication method. Currently admin accounts are the only system account following this pattern.
+  //  *
+  //  */
+  // async validate(username: string, password: string): Promise<any> {
+  //   // Query user
+  //   const user = await this.userService.findLocalUserByUsername(username);
+  //   if (!user) {
+  //     throw new UnauthorizedException();
+  //   }
+  //   // Verify password
+  //   if (user.password) {
+  //     const isPasswordMatched = await argon.verify(user.password, password);
+  //     //  Return user if password matched
+  //     if (!isPasswordMatched) {
+  //       return null;
+  //     }
+  //     const { id, role, username: uniqueUsername } = user;
+  //     // Return user without password
+  //     return {
+  //       // Generate JWT token
+  //       token: this.jwtTokenService.sign(
+  //         { id, role },
+  //         {
+  //           secret: process.env.JWT_SECRET,
+  //         },
+  //       ),
+  //       user: {
+  //         ...user,
+  //         username: uniqueUsername,
+  //       },
+  //     };
+  //   }
+  // }
 
   /**
    * Hash password using argon2
@@ -75,8 +76,7 @@ export class SharedAuthService {
       const passwordMatches = await argon.verify(hashedPassword, inputPassword);
       return passwordMatches;
     } catch (error) {
-      console.error('Error verifying password:', error);
-      throw new BadRequestException('Error verifying password');
+      throw new AppCustomException('loginFailed');
     }
   }
 

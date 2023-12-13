@@ -62,6 +62,9 @@ export class CustomersGoogleStrategy extends PassportStrategy(
           const newUser = await this.usersService.findCustomerByEmail(
             user.email,
           );
+          /**
+           * After `done()` is executed, Google will call the `callback` endpoint. This is where the system JWT token is generated and returned to the user.
+           */
           return done(null, newUser);
         }
       }

@@ -1,6 +1,5 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import crypto from 'crypto';
-import { JwtService } from '@nestjs/jwt';
 import string_decoder from 'string_decoder';
 import { exclude } from '@libs/common/src/utils/exclude';
 import { SharedUsersService } from '@libs/common/src/users/users.service';
@@ -18,6 +17,8 @@ import {
 } from '@libs/common/src/auth/dto/customers/customers-native-startegy/signup.dto';
 import { PrismaService } from '@libs/common/src/prisma/prisma.service';
 import { SharedAuthService } from '@libs/common/src/auth/sharedAuth.service';
+import { CustomerNativeLoginDto } from '@libs/common/src/auth/dto/customers/customers-native-startegy/login.dto';
+import { RpcException } from '@nestjs/microservices';
 
 @Injectable()
 export class CustomersAuthService {
@@ -25,7 +26,6 @@ export class CustomersAuthService {
     private userService: SharedUsersService,
     private prisma: PrismaService,
     private sharedAuthService: SharedAuthService,
-    private jwtTokenService: JwtService,
   ) {}
 
   async me(userId: number) {
@@ -43,6 +43,61 @@ export class CustomersAuthService {
       return userWithoutPassword;
     } catch (error) {
       throw new ForbiddenException(error.message);
+    }
+  }
+
+  /**
+   * Validate customers logining in using Native Strategy (email & password)
+   * @param body
+   * @returns
+   */
+  async customerNativeLogin(body: CustomerNativeLoginDto) {
+    const user = await this.prisma.user.findUnique({
+      include: { profile: true, authentication_method: true },
+      where: {
+        emailAddress: body.email,
+      },
+    });
+
+    if (!user) {
+      throw new RpcException('loginFailed');
+    }
+
+    const {
+      id: userId,
+      lastLogin,
+      verified,
+      profile,
+      emailAddress,
+      authentication_method: customerAuthMethod,
+    } = user; // destructure user object
+
+    if (customerAuthMethod) {
+      const { passwordHash } = customerAuthMethod;
+      // verify password
+      await this.sharedAuthService.verifyPassword(
+        body.password,
+        passwordHash as string,
+      );
+    }
+    if (profile) {
+      const { createdAt, firstName, lastName, gender, updatedAt } = profile; // destructure profile object
+
+      // Return user data
+      return {
+        // Generate JWT token
+        token: await this.sharedAuthService.generateJWtToken({
+          id: userId,
+        }),
+        createdAt,
+        updatedAt,
+        lastLogin,
+        verified,
+        lastName,
+        firstName,
+        gender,
+        emailAddress,
+      };
     }
   }
 

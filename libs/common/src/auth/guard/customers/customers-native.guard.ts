@@ -4,9 +4,5 @@ import { AuthGuard } from '@nestjs/passport';
 
 @Injectable()
 export class CustomersNativeAuthGuard extends AuthGuard(
-  AuthStrategy.CUSTOMERS_NATIVE,
-) {
-  constructor() {
-    super();
-  }
-}
+  AuthStrategy.CUSTOMERS_NATIVE_LOCAL,
+) {}

@@ -4,75 +4,63 @@ import { Strategy } from 'passport-local';
 import AuthStrategy from '@libs/common/src/enums/auth-startegy.enum';
 import { PrismaService } from '@libs/common/src/prisma/prisma.service';
 import { SharedAuthService } from '../../sharedAuth.service';
-import { AppCustomException } from '@libs/common/src/exceptions/custom-exception';
 import { SharedUsersService } from '@libs/common/src/users/users.service';
+import { ExtractJwt } from 'passport-jwt';
 
 @Injectable()
 export class CustomersNativeStrategy extends PassportStrategy(
   Strategy,
-  AuthStrategy.CUSTOMERS_NATIVE,
+  AuthStrategy.CUSTOMERS_NATIVE_LOCAL,
 ) {
   constructor(
     private prisma: PrismaService,
     private sharedAuthService: SharedAuthService,
     private readonly sharedUsersService: SharedUsersService,
   ) {
-    super({ usernameField: 'email', passwordField: 'password' });
+    super({
+      usernameField: 'email',
+      passwordField: 'password',
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      ignoreExpiration: false,
+    });
   }
 
   /*
    * Validate Customer users signing in using Native Strategy (email & password)
    */
-  async validate(email: string, password: string): Promise<any> {
+  async validate(email: string, password: string) {
     try {
-      // find user
-
       const user = await this.prisma.user.findUnique({
-        include: { profile: true, authentication_method: true },
         where: {
           emailAddress: email,
+        },
+        include: {
+          authentication_method: {
+            select: { passwordHash: true },
+          },
         },
       });
 
       if (!user) {
-        throw new AppCustomException('userNotFound');
+        throw new UnauthorizedException();
       }
 
-      const {
-        id: userId,
-        lastLogin,
-        verified,
-        profile,
-        authentication_method: customerAuthMethod,
-      } = user; // destructure user object
-
-      if (customerAuthMethod) {
-        const { passwordHash } = customerAuthMethod;
-        // verify password
-        await this.sharedAuthService.verifyPassword(
-          password,
-          passwordHash as string,
-        );
+      const { authentication_method: authMethod } = user;
+      const hashedPassword = authMethod?.passwordHash;
+      if (hashedPassword) {
+        await this.sharedAuthService.verifyPassword(password, hashedPassword);
+      } else {
+        throw new UnauthorizedException();
       }
-      if (profile) {
-        const { createdAt, firstName, lastName, gender, updatedAt } = profile; // destructure profile object
-
-        // Return user data
-        return {
-          // Generate JWT token
-          token: await this.sharedAuthService.generateJWtToken({ id: userId }),
-          createdAt,
-          updatedAt,
-          lastLogin,
-          verified,
-          lastName,
-          firstName,
-          gender,
-          email,
-        };
-      }
+      // Return customer user
+      const customer = await this.sharedUsersService.findCustomerByEmail(email);
+      return {
+        token: await this.sharedAuthService.generateJWtToken({
+          email: customer?.emailAddress,
+        }),
+        ...customer,
+      };
     } catch (error) {
-      console.log(error);
       throw new UnauthorizedException();
     }
   }

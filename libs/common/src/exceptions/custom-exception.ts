@@ -21,10 +21,11 @@ export class AppCustomException extends HttpException {
       customCode: 1004,
       httpCode: HttpStatus.BAD_REQUEST,
     },
-    passwordNotMatched: {
+    loginFalied: {
       customCode: 1005,
       httpCode: HttpStatus.BAD_REQUEST,
     },
+
     // 2000 - 2999: Product management related errors
     // 3000 - 3999: Order management related errors
     // 4000 - 4999: Cart management related errors

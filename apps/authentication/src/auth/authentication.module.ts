@@ -10,7 +10,6 @@ import { FirebaseModule } from '@libs/common/src/firebase/firebase.module';
 import { UsersModule } from '@libs/common/src/users/users.module';
 import { SharedUsersService } from '@libs/common/src/users/users.service';
 import { LocalStrategy } from '@libs/common/src/auth/strategy/local.strategy';
-import { CustomersPhoneStrategy } from '@libs/common/src/auth/strategy/customers/customers-phone.strategy';
 import { JwtStrategy } from '@libs/common/src/auth/strategy/jwt.strategy';
 import { JwtQueryStrategy } from '@libs/common/src/auth/strategy/jwtquery.strategy';
 import { PrismaModule } from '@libs/common/src/prisma/prisma.module';
@@ -40,7 +39,6 @@ import { SharedAuthModule } from '@libs/common/src/auth/sharedAuth.module';
   controllers: [AuthController],
   providers: [
     LocalStrategy,
-    CustomersPhoneStrategy,
     AdminsAuthService,
     JwtStrategy,
     JwtQueryStrategy,
