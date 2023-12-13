@@ -43,15 +43,4 @@ export class AuthController {
   signup(@Body() body: LocalAuthSignupDto) {
     return this.authService.adminSignup(body);
   }
-
-  // /**
-  //  * Get current logged in user. Currently return Local (admin) user only.
-  //  */
-  // @UseGuards(JwtGuard)
-  // @ApiBearerAuth()
-  // @Get('/me')
-  // @ApiOkResponse({ type: LocalAuthResponseDto })
-  // me(@getLocalUser() user: any) {
-  //   return user;
-  // }
 }

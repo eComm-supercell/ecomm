@@ -37,9 +37,13 @@ import { CustomersNativeAuthResponse } from '@libs/common/src/auth/dto/customers
 import { CustomerNativeLoginDto } from '@libs/common/src/auth/dto/customers/customers-native-startegy/login.dto';
 import { CustomersNativeAuthGuard } from '@libs/common/src/auth/guard/customers/customers-native.guard';
 import { CustomersJWTAuthGuard } from '@libs/common/src/auth/guard/customers/customers-jwt-native.guard';
+import { BaseCustomersAuthResponseDto } from '@libs/common/src/auth/dto/customers/base';
+import {
+  SystemUser,
+  getSystemUser,
+} from '@libs/common/src/users/decorators/getuser.decorator';
 
 @ApiTags('Authentication')
-@ApiBearerAuth()
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -152,9 +156,18 @@ export class AuthController {
     return { hashedNonce: this.authService.generateNonce(32) };
   }
 
+  /**
+   * Retrieve the user entity.
+   * @param req
+   * @returns
+   */
+  @ApiBearerAuth()
   @UseGuards(CustomersJWTAuthGuard)
+  @ApiOkResponse({
+    type: BaseCustomersAuthResponseDto,
+  })
   @Get('/me')
-  test(@Request() req) {
-    return req.user;
+  test(@getSystemUser() user: SystemUser) {
+    return user;
   }
 }

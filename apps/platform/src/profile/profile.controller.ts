@@ -1,7 +1,7 @@
 import {
   Controller,
   Get,
-  Post,
+  // Post,
   Body,
   Patch,
   Param,
@@ -9,14 +9,13 @@ import {
   // Delete,
 } from '@nestjs/common';
 import { ProfileService } from './profile.service';
-import { CreateProfileDto } from './dto/create-profile.dto';
+// import { CreateProfileDto } from './dto/create-profile.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
-import { ApiBearerAuth, ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
-import { apiExceptionResponse } from '@libs/common/src/exceptions/exception.decorator';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+// import { apiExceptionResponse } from '@libs/common/src/exceptions/exception.decorator';
 import { JwtGuard } from '@libs/common/src/auth/guard/jwt.guard';
-import { getUser } from '@libs/common/src/users/decorators/getuser.decorator';
-import { OldUser } from '@prisma/client';
-import { ProfileEntity } from './entity/profile.entity';
+// import { OldUser } from '@prisma/client';
+// import { ProfileEntity } from './entity/profile.entity';
 
 @Controller('profile')
 @ApiTags('Profile')
@@ -28,15 +27,15 @@ export class ProfileController {
   /**
    * Create profile for user.
    */
-  @Post()
-  @apiExceptionResponse()
-  @ApiCreatedResponse({
-    description: 'The record has been successfully created.',
-    type: ProfileEntity,
-  })
-  create(@getUser() user: OldUser, @Body() createProfileDto: CreateProfileDto) {
-    return this.profileService.create(user, createProfileDto);
-  }
+  // @Post()
+  // @apiExceptionResponse()
+  // @ApiCreatedResponse({
+  //   description: 'The record has been successfully created.',
+  //   type: ProfileEntity,
+  // })
+  // create(@getUser() user: OldUser, @Body() createProfileDto: CreateProfileDto) {
+  //   return this.profileService.create(user, createProfileDto);
+  // }
 
   // @Get()
   // findAll() {
