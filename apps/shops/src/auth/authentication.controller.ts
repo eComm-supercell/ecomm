@@ -31,7 +31,10 @@ import { CustomerPhoneLoginDto } from '@libs/common/src/auth/dto/customers/custo
 import { CustomersNativeAuthGuard } from '@libs/common/src/auth/guard/customers/customers-native.guard';
 import { CustomersGoogleAuthGuard } from '@libs/common/src/auth/guard/customers/customers-google-oauth.guard';
 import { SharedAuthService } from '@libs/common/src/auth/sharedAuth.service';
-import { CustomersGoogleOatuhResponseDto } from '@libs/common/src/auth/dto/customers/customers-google-oauth-startegy/oauth-response.dto';
+import {
+  CustomersWEBGoogleOatuhResponseDto,
+  CustomersOauthResponseDto,
+} from '@libs/common/src/auth/dto/customers/customers-oauth-startegy/oauth-response.dto';
 import { CustomersNativeAuthResponse } from '@libs/common/src/auth/dto/customers/customers-native-startegy/login-response.dto';
 import { CustomerNativeLoginDto } from '@libs/common/src/auth/dto/customers/customers-native-startegy/login.dto';
 
@@ -78,10 +81,10 @@ export class AuthController {
    * The user will be redirected to the ```Google OAuth``` authorization page.
    * After successful authorization, Google will redirect the user back to `/auth/google/callback`.
    *
-   * **NOTE:** The endpoint response is infact returned by the `auth/google/callback` endpoint and is only documented here for reference. The 'callback' endpoint URL is hidden
+   * **NOTE:** The endpoint response is infacBaseCustomersAuthResponseDtot returned by the `auth/google/callback` endpoint and is only documented here for reference. The 'callback' endpoint URL is hidden
    */
   @Get('google')
-  @ApiOkResponse({ type: CustomersGoogleOatuhResponseDto })
+  @ApiOkResponse({ type: CustomersWEBGoogleOatuhResponseDto })
   @UseGuards(CustomersGoogleAuthGuard)
   async googleAuth() {}
 
@@ -136,7 +139,7 @@ export class AuthController {
   @Post('/idp/signin')
   @apiExceptionResponse()
   @ApiCreatedResponse({
-    type: LocalAuthResponseDto,
+    type: CustomersOauthResponseDto,
   })
   customerIdpSignin(@Body() body: CustomerIdpSignupDto) {
     return this.authService.customerIdpSignin(body);
