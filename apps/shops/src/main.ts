@@ -7,7 +7,6 @@ import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(CustomersModule);
-  // Add global exception filter
   // Add global validation pipe
   app.useGlobalPipes(
     new ValidationPipe({
@@ -20,7 +19,9 @@ async function bootstrap() {
     }),
   );
 
+  // Add global exception filter
   app.useGlobalFilters(new AppExceptionFilter());
+
   // Config service
   const configService = app.get<ConfigService>(ConfigService);
   console.log('Shops PORT HERE', configService.get('SHOPS_PORT'));
