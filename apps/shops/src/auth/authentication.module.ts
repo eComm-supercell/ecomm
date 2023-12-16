@@ -6,6 +6,8 @@ import { PassportModule } from '@nestjs/passport';
 import { FirebaseModule } from '@libs/common/src/firebase/firebase.module';
 import { PrismaModule } from '@libs/common/src/prisma/prisma.module';
 import { SharedAuthModule } from '@libs/common/src/auth/sharedAuth.module';
+import { ClientsModule, Transport } from '@nestjs/microservices';
+import { SERVICE_NAMES } from '@libs/common/src/constants/service-names';
 
 @Module({
   imports: [
@@ -14,6 +16,17 @@ import { SharedAuthModule } from '@libs/common/src/auth/sharedAuth.module';
     FirebaseModule,
     PrismaModule,
     SharedAuthModule,
+    // Connect auth module as a client to auth microservice
+    ClientsModule.register([
+      {
+        name: 'AUTHENTICATION',
+        transport: Transport.TCP,
+        options: {
+          host: SERVICE_NAMES.auth.name,
+          port: SERVICE_NAMES.auth.port,
+        },
+      },
+    ]),
   ],
   controllers: [AuthController],
   providers: [AuthService],
