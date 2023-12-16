@@ -13,7 +13,7 @@ import {
 import {
   CustomerIdpSignupDto,
   CustomersEmailPasswordSignupDto,
-  CustomersSignupDto,
+  // CustomersSignupDto,
 } from '@libs/common/src/auth/dto/customers/customers-native-startegy/signup.dto';
 import { PrismaService } from '@libs/common/src/prisma/prisma.service';
 import { SharedAuthService } from '@libs/common/src/auth/sharedAuth.service';
@@ -106,34 +106,34 @@ export class CustomersAuthService {
    * @deprecated
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async validateCustomer(phone: string, _password?: string): Promise<any> {
-    // Query user
-    const user = await this.prisma.oldUser.findUnique({
-      where: { username: phone },
-    });
-    if (!user) {
-      return null;
-    }
+  // async validateCustomer(phone: string, _password?: string): Promise<any> {
+  //   // Query user
+  //   const user = await this.prisma.oldUser.findUnique({
+  //     where: { username: phone },
+  //   });
+  //   if (!user) {
+  //     return null;
+  //   }
 
-    const { id, role, username: uniqueUsername } = user;
-    // Return user without password
-    return {
-      // Generate JWT token
-      token: await this.sharedAuthService.generateJWtToken({ id, role }),
-      user: {
-        ...user,
-        username: uniqueUsername,
-      },
-    };
-  }
+  //   const { id, role, username: uniqueUsername } = user;
+  //   // Return user without password
+  //   return {
+  //     // Generate JWT token
+  //     token: await this.sharedAuthService.generateJWtToken({ id, role }),
+  //     user: {
+  //       ...user,
+  //       username: uniqueUsername,
+  //     },
+  //   };
+  // }
 
   /**
    * Create and signup new Customers using phone number and password. This method is used for system accounts utilizing phone number and password authentication method. Currently customer accounts are the only system account following this pattern.
    *
    */
-  async signupCustomerByPhone(body: CustomersSignupDto) {
-    return await this.userService.signupCustomerByPhone(body);
-  }
+  // async signupCustomerByPhone(body: CustomersSignupDto) {
+  //   return await this.userService.signupCustomerByPhone(body);
+  // }
   /**
    * Create and signup new Customers using email & password.
    *

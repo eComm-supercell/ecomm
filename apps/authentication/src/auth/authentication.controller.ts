@@ -7,7 +7,7 @@ import { MessagePattern, RpcException } from '@nestjs/microservices';
 import {
   CustomerIdpSignupDto,
   CustomersEmailPasswordSignupDto,
-  CustomersSignupDto,
+  // CustomersSignupDto,
 } from '@libs/common/src/auth/dto/customers/customers-native-startegy/signup.dto';
 import { ExceptionFilter } from '@libs/common/src/exceptions/custom-rcp-exception.filter';
 import { CustomerNativeLoginDto } from '@libs/common/src/auth/dto/customers/customers-native-startegy/login.dto';
@@ -52,15 +52,15 @@ export class AuthController {
    * Create and signup new Customers using phone number and password. This method is used for system accounts utilizing phone number and password authentication method. Currently customer accounts are the only system account following this pattern.
    *
    */
-  @MessagePattern({ cmd: ServiceMessages.auth.customers.signupByPhone })
-  async signupCustomerByPhone(body: CustomersSignupDto) {
-    try {
-      return await this.customersAuthService.signupCustomerByPhone(body);
-    } catch (error) {
-      // NOTE: Final error comming from microservice MUST always be RpcException
-      throw new RpcException(error);
-    }
-  }
+  // @MessagePattern({ cmd: ServiceMessages.auth.customers.signupByPhone })
+  // async signupCustomerByPhone(body: CustomersSignupDto) {
+  //   try {
+  //     return await this.customersAuthService.signupCustomerByPhone(body);
+  //   } catch (error) {
+  //     // NOTE: Final error comming from microservice MUST always be RpcException
+  //     throw new RpcException(error);
+  //   }
+  // }
 
   /**
    * Create new Customer account using email & password.
