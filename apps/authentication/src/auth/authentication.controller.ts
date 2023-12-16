@@ -1,7 +1,6 @@
 import { Controller, UseFilters } from '@nestjs/common';
 import crypto from 'crypto';
 import string_decoder from 'string_decoder';
-import { AdminsAuthService } from './authentication.admins.service';
 import { CustomersAuthService } from './authentication.customers.service';
 import { MessagePattern, RpcException } from '@nestjs/microservices';
 import {
@@ -15,10 +14,7 @@ import { ServiceMessages } from '@libs/common/src/constants/service-messages';
 @UseFilters(new ExceptionFilter())
 @Controller('auth')
 export class AuthController {
-  constructor(
-    private readonly adminsAuthService: AdminsAuthService,
-    private readonly customersAuthService: CustomersAuthService,
-  ) {}
+  constructor(private readonly customersAuthService: CustomersAuthService) {}
 
   // /**
   //  * Retrieve user information (Profile)
@@ -71,6 +67,7 @@ export class AuthController {
     try {
       return await this.customersAuthService.signupCustomerByEmail(body);
     } catch (error) {
+      console.error(error);
       // NOTE: Final error comming from microservice MUST always be RpcException
       throw new RpcException(error);
     }

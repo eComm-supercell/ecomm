@@ -103,7 +103,7 @@ export class CustomersAuthService {
 
   /**
    * validate user using phone number. This method is used for system accounts utilizing phone number and password authentication method. Currently customer accounts are the only system account following this pattern. `NOTE:` password is ignored.
-   * @deprecated
+   *
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   // async validateCustomer(phone: string, _password?: string): Promise<any> {
