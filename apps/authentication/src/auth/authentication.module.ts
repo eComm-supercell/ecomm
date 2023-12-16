@@ -11,7 +11,6 @@ import { UsersModule } from '@libs/common/src/users/users.module';
 import { SharedUsersService } from '@libs/common/src/users/users.service';
 import { LocalStrategy } from '@libs/common/src/auth/strategy/local.strategy';
 import { JwtStrategy } from '@libs/common/src/auth/strategy/jwt.strategy';
-import { JwtQueryStrategy } from '@libs/common/src/auth/strategy/jwtquery.strategy';
 import { PrismaModule } from '@libs/common/src/prisma/prisma.module';
 import { SharedAuthModule } from '@libs/common/src/auth/sharedAuth.module';
 
@@ -41,7 +40,6 @@ import { SharedAuthModule } from '@libs/common/src/auth/sharedAuth.module';
     LocalStrategy,
     AdminsAuthService,
     JwtStrategy,
-    JwtQueryStrategy,
     CustomersAuthService,
     JwtService,
     SharedUsersService,

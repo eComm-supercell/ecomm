@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import * as argon2 from 'argon2';
+// import * as argon2 from 'argon2';
 import { PrismaService } from '@libs/common/src/prisma/prisma.service';
-import { LocalAuthSignupDto } from '../auth/dto/customers/local-startegy/user-signup.dto';
-import { CustomersSignupDto } from '../auth/dto/customers/customers-native-startegy/signup.dto';
-import Role from '@libs/common/src/enums/role.enum';
-import IdentityProviders from '@libs/common/src/enums/provider.enum';
+// import { LocalAuthSignupDto } from '../auth/dto/customers/local-startegy/user-signup.dto';
+// import { CustomersSignupDto } from '../auth/dto/customers/customers-native-startegy/signup.dto';
+// import Role from '@libs/common/src/enums/role.enum';
+// import IdentityProviders from '@libs/common/src/enums/provider.enum';
 import { FirebaseService } from '@libs/common/src/firebase/firebase.service';
-import { AppCustomException } from '@libs/common/src/exceptions/custom-exception';
+// import { AppCustomException } from '@libs/common/src/exceptions/custom-exception';
 
 @Injectable()
 export class SharedUsersService {
@@ -136,84 +136,84 @@ export class SharedUsersService {
    * Create Admin account (Local Strategy) using usernmae and password
    *
    */
-  async createAdminAccount(data: LocalAuthSignupDto) {
-    // Create user
-    const response = await this.prisma.oldUser.create({
-      data: {
-        // Empty wallet and profile
-        wallet: {
-          create: {
-            amount: 0,
-          },
-        },
-        profile: {
-          create: {},
-        },
-        role: Role.admin,
-        email: data.email,
-        username: data.username,
-        fname: data.firstName,
-        lname: data.lastName,
-        password: await argon2.hash(data.password as string),
-      },
-      select: this.localUserSelectFields,
-    });
-    const { fname, lname, ...rest } = response;
-    return { ...rest, firstName: fname, lastName: lname };
-  }
+  // async createAdminAccount(data: LocalAuthSignupDto) {
+  //   // Create user
+  //   const response = await this.prisma.oldUser.create({
+  //     data: {
+  //       // Empty wallet and profile
+  //       wallet: {
+  //         create: {
+  //           amount: 0,
+  //         },
+  //       },
+  //       profile: {
+  //         create: {},
+  //       },
+  //       role: Role.admin,
+  //       email: data.email,
+  //       username: data.username,
+  //       fname: data.firstName,
+  //       lname: data.lastName,
+  //       password: await argon2.hash(data.password as string),
+  //     },
+  //     select: this.localUserSelectFields,
+  //   });
+  //   const { fname, lname, ...rest } = response;
+  //   return { ...rest, firstName: fname, lastName: lname };
+  // }
 
   /**
    * Create Customer account (Custmers Local Strategy) using phone number and password
    */
-  async signupCustomerByPhone(data: CustomersSignupDto) {
-    // Get user from firebase
-    const firebaseUser = await this.firebase.getUserByUID(data.firebaseUID);
+  // async signupCustomerByPhone(data: CustomersSignupDto) {
+  //   // Get user from firebase
+  //   const firebaseUser = await this.firebase.getUserByUID(data.firebaseUID);
 
-    if (!firebaseUser) {
-      throw new AppCustomException('userNotFound');
-    }
+  //   if (!firebaseUser) {
+  //     throw new AppCustomException('userNotFound');
+  //   }
 
-    const { uid, email, phoneNumber } = firebaseUser;
+  //   const { uid, email, phoneNumber } = firebaseUser;
 
-    // Add user to system database
-    const response = await this.prisma.oldUser.create({
-      data: {
-        // Empty wallet and profile
-        wallet: {
-          create: {
-            amount: 0,
-          },
-        },
-        profile: {
-          create: {},
-        },
-        role: Role.customer,
-        email,
-        username: phoneNumber, // Use phone number as username
-        providerId: uid,
-        provider: IdentityProviders.GOOGLE,
-      },
-      select: this.localUserSelectFields,
-    });
-    const { fname, lname, ...rest } = response;
-    return { ...rest, firstName: fname, lastName: lname };
-  }
+  //   // Add user to system database
+  //   const response = await this.prisma.oldUser.create({
+  //     data: {
+  //       // Empty wallet and profile
+  //       wallet: {
+  //         create: {
+  //           amount: 0,
+  //         },
+  //       },
+  //       profile: {
+  //         create: {},
+  //       },
+  //       role: Role.customer,
+  //       email,
+  //       username: phoneNumber, // Use phone number as username
+  //       providerId: uid,
+  //       provider: IdentityProviders.GOOGLE,
+  //     },
+  //     select: this.localUserSelectFields,
+  //   });
+  //   const { fname, lname, ...rest } = response;
+  //   return { ...rest, firstName: fname, lastName: lname };
+  // }
 
-  findOne(id: number) {
-    // TODO: add DB view to get user profile
-    return this.prisma.oldUser.findUnique({
-      where: { id },
-      select: {
-        id: true,
-        fname: true,
-        lname: true,
-        email: true,
-        username: true,
-        role: true,
-        profile: true,
-      },
-    });
-  }
+  // findOne(id: number) {
+  //   // TODO: add DB view to get user profile
+  //   return this.prisma.oldUser.findUnique({
+  //     where: { id },
+  //     select: {
+  //       id: true,
+  //       fname: true,
+  //       lname: true,
+  //       email: true,
+  //       username: true,
+  //       role: true,
+  //       profile: true,
+  //     },
+  //   });
+  // }
 
   remove(id: number) {
     return `This action removes a #${id} user`;
@@ -227,12 +227,12 @@ export class SharedUsersService {
    *
    *
    */
-  async findLocalUserByUsername(username: string) {
-    return await this.prisma.oldUser.findUnique({
-      where: { username },
-      select: this.localUserSelectFields,
-    });
-  }
+  // async findLocalUserByUsername(username: string) {
+  //   return await this.prisma.oldUser.findUnique({
+  //     where: { username },
+  //     select: this.localUserSelectFields,
+  //   });
+  // }
   async findLocalUserById(id: number) {
     return await this.prisma.user.findUnique({
       where: { id },

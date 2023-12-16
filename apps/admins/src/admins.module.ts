@@ -3,14 +3,6 @@ import { ConfigModule } from '@nestjs/config';
 import path from 'path';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { SERVICE_NAMES } from '@libs/common/src/constants/service-names';
-import { CategoryModule } from './category/category.module';
-import { PrismaModule } from '@libs/common/src/prisma/prisma.module';
-import { CityModule } from './city/city.module';
-import { ApiKeyModule } from './api-key/api-key.module';
-import { AuditLogModule } from './audit-log/audit-log.module';
-import { SystemConfigModule } from './system-config/system-config.module';
-import { ProvinceModule } from './province/province.module';
-import { MobileAppConfigModule } from './mobile-app-config/mobile-app-config.module';
 import { AdminAuthenticationModule } from './auth/authentication.module';
 
 @Module({
@@ -36,14 +28,6 @@ import { AdminAuthenticationModule } from './auth/authentication.module';
       ],
     }),
     AdminAuthenticationModule,
-    CategoryModule,
-    CityModule,
-    ApiKeyModule,
-    PrismaModule,
-    AuditLogModule,
-    SystemConfigModule,
-    ProvinceModule,
-    MobileAppConfigModule,
   ],
 })
 export class AdminsModule {}
