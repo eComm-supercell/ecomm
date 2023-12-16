@@ -6,7 +6,6 @@ import {
   CustomersEmailPasswordSignupDto,
   CustomersSignupDto,
 } from '@libs/common/src/auth/dto/customers/customers-native-startegy/signup.dto';
-import { SERVICE_NAMES } from '@libs/common/src/constants/service-names';
 import { ClientProxy } from '@nestjs/microservices';
 import { handleMicroserviceExceptions } from '@libs/common/src/utils/microservicesExceptionHandler';
 import { lastValueFrom } from 'rxjs';
@@ -15,9 +14,7 @@ import { ServiceMessages } from '@libs/common/src/constants/service-messages';
 
 @Injectable()
 export class AuthService {
-  constructor(
-    @Inject(SERVICE_NAMES.auth.label) private clientAuth: ClientProxy,
-  ) {}
+  constructor(@Inject('AUTHENTICATION') private clientAuth: ClientProxy) {}
 
   /**
    * Signup customers using email and password

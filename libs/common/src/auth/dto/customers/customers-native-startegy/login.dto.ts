@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsStrongPassword } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsStrongPassword } from 'class-validator';
 
 export class CustomerNativeLoginDto {
   @ApiProperty({
@@ -9,6 +9,7 @@ export class CustomerNativeLoginDto {
     example: 'john@email.com',
   })
   @IsEmail()
+  @IsNotEmpty()
   email: string;
 
   @ApiProperty({
@@ -16,6 +17,7 @@ export class CustomerNativeLoginDto {
     required: true,
     format: 'password',
   })
+  @IsNotEmpty()
   @IsStrongPassword({ minLength: 8 })
   password: string;
 }

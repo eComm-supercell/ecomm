@@ -1,6 +1,4 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
-import path from 'path';
 import { AuthController } from './authentication.controller';
 import { CustomersAuthService as CustomersAuthService } from './authentication.customers.service';
 import { AdminsAuthService as AdminsAuthService } from './authentication.admins.service';
@@ -13,18 +11,11 @@ import { LocalStrategy } from '@libs/common/src/auth/strategy/local.strategy';
 import { JwtStrategy } from '@libs/common/src/auth/strategy/jwt.strategy';
 import { PrismaModule } from '@libs/common/src/prisma/prisma.module';
 import { SharedAuthModule } from '@libs/common/src/auth/sharedAuth.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      isGlobal: true,
-      cache: true,
-      envFilePath: [
-        process.env.NODE_ENV === 'development'
-          ? path.join(process.cwd(), '.env.dev')
-          : path.join(process.cwd(), '.env.prod'),
-      ],
-    }),
+    ConfigModule,
     PassportModule,
     JwtModule.register({
       secret: process.env.JWT_SECRET,

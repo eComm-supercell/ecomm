@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
-import { AuthenticationModule as Auth } from './auth/authentication.module';
+import { ServiceNamesService } from './service-names.service';
 import { ConfigModule } from '@nestjs/config';
 import path from 'path';
+
 @Module({
   imports: [
-    Auth,
     ConfigModule.forRoot({
       isGlobal: true,
       cache: true,
@@ -15,7 +15,6 @@ import path from 'path';
       ],
     }),
   ],
-  controllers: [],
-  providers: [],
+  providers: [ServiceNamesService],
 })
-export class AuthenticationModule {}
+export class ServiceNamesModule {}

@@ -3,9 +3,13 @@ import { AdminsModule } from './admins.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
 import { AppExceptionFilter } from '@libs/common/src/exceptions/custom-exception.filter';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AdminsModule);
+  // Add global validation pipe
+  app.useGlobalPipes(new ValidationPipe());
+
   // Add global exception filter
   app.useGlobalFilters(new AppExceptionFilter());
   // Config service

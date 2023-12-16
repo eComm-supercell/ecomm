@@ -1,7 +1,14 @@
 import IdentityProviders from '@libs/common/src/enums/provider.enum';
 import { ApiProperty } from '@nestjs/swagger';
 import { Gender } from '@prisma/client';
-import { IsEmail, IsEnum, IsNotEmpty, IsStrongPassword } from 'class-validator';
+import {
+  IsEmail,
+  IsEnum,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  IsStrongPassword,
+} from 'class-validator';
 
 export class CustomersSignupDto {
   @ApiProperty({
@@ -68,6 +75,8 @@ export class CustomersEmailPasswordSignupDto {
     nullable: false,
     required: true,
   })
+  @IsString()
+  @IsNotEmpty()
   firstName: string;
 
   @ApiProperty({
@@ -77,6 +86,8 @@ export class CustomersEmailPasswordSignupDto {
     nullable: false,
     required: true,
   })
+  @IsString()
+  @IsOptional()
   lastName: string;
 
   @ApiProperty({
