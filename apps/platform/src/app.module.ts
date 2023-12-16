@@ -4,11 +4,31 @@ import { ConfigModule } from '@nestjs/config';
 // import { AttachmentsModule } from './attachments/attachments.module';
 // import { MilisearchModule } from './milisearch/milisearch.module';
 import { ClientsModule, Transport } from '@nestjs/microservices';
-import { SERVICE_NAMES } from '@libs/common/src/constants/service-names';
 import { SharedAuthModule } from '@libs/common/src/auth/sharedAuth.module';
+import { ServiceNamesModule } from '@libs/common/src/service-names/service-names.module';
+import { ServiceNamesService } from '@libs/common/src/service-names/service-names.service';
 
 @Module({
   imports: [
+    ServiceNamesModule,
+    // Connect auth module as a client to auth microservice
+    ClientsModule.registerAsync({
+      clients: [
+        {
+          name: 'AUTHENTICATION',
+          useFactory: (serviceNames: ServiceNamesService) => {
+            const options = serviceNames.connectToAuthenticationService();
+            return {
+              transport: Transport.TCP,
+              options: {
+                host: options.name,
+                port: options.port,
+              },
+            };
+          },
+        },
+      ],
+    }),
     ConfigModule.forRoot({
       isGlobal: true,
       cache: true,
@@ -18,17 +38,7 @@ import { SharedAuthModule } from '@libs/common/src/auth/sharedAuth.module';
           : path.join(process.cwd(), '.env.prod'),
       ],
     }),
-    ClientsModule.register([
-      // Connect platform public service as a client to auth microservice
-      {
-        name: SERVICE_NAMES.auth.name,
-        transport: Transport.TCP,
-        options: {
-          host: SERVICE_NAMES.auth.name,
-          port: parseInt(SERVICE_NAMES.auth.port as string) as number,
-        },
-      },
-    ]),
+
     // AttachmentsModule,
     // MilisearchModule,
     SharedAuthModule,
