@@ -7,6 +7,8 @@ import path from 'path';
 import { SharedAuthModule } from '@libs/common/src/auth/sharedAuth.module';
 import { CustomersAuthenticationModule } from './auth/authentication.module';
 import { ProfileModule } from './profile/profile.module';
+import { ClientsModule, Transport } from '@nestjs/microservices';
+import { SERVICE_NAMES } from '@libs/common/src/constants/service-names';
 
 @Module({
   imports: [
@@ -21,6 +23,17 @@ import { ProfileModule } from './profile/profile.module';
           : path.join(process.cwd(), '.env.prod'),
       ],
     }),
+    // Connect auth module as a client to auth microservice
+    ClientsModule.register([
+      {
+        name: 'AUTHENTICATION',
+        transport: Transport.TCP,
+        options: {
+          host: SERVICE_NAMES.auth.name,
+          port: SERVICE_NAMES.auth.port as any,
+        },
+      },
+    ]),
     ProfileModule,
   ],
   controllers: [CustomersController],

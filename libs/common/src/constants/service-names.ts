@@ -2,7 +2,7 @@
 export const SERVICE_NAMES = {
   auth: {
     name: 'localhost',
-    port: process.env.AUTHENTICATION_PORT,
+    port: 4000,
     label: 'AUTHENTICATION',
   },
 } as const;
