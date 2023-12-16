@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import path from 'path';
 import { AuthController } from './authentication.controller';
 import { AuthService } from './authentication.service';
 import { PassportModule } from '@nestjs/passport';
@@ -12,15 +11,7 @@ import { SharedAuthModule } from '@libs/common/src/auth/sharedAuth.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      isGlobal: true,
-      cache: true,
-      envFilePath: [
-        process.env.NODE_ENV === 'development'
-          ? path.join(process.cwd(), '.env.dev')
-          : path.join(process.cwd(), '.env.prod'),
-      ],
-    }),
+    ConfigModule,
     // Connect auth module as a client to auth microservice
     ClientsModule.register([
       {

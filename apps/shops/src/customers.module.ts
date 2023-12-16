@@ -15,7 +15,6 @@ import { ProfileModule } from './profile/profile.module';
     SharedAuthModule,
     ConfigModule.forRoot({
       isGlobal: true,
-      cache: true,
       envFilePath: [
         process.env.NODE_ENV === 'development'
           ? path.join(process.cwd(), '.env.dev')
