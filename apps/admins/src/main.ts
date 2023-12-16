@@ -8,16 +8,7 @@ import { ValidationPipe } from '@nestjs/common';
 async function bootstrap() {
   const app = await NestFactory.create(AdminsModule);
   // Add global validation pipe
-  app.useGlobalPipes(
-    new ValidationPipe({
-      forbidUnknownValues: true,
-      forbidNonWhitelisted: true,
-      whitelist: true,
-      stopAtFirstError: true,
-      enableDebugMessages: true,
-      transform: true,
-    }),
-  );
+  app.useGlobalPipes(new ValidationPipe());
 
   // Add global exception filter
   app.useGlobalFilters(new AppExceptionFilter());
