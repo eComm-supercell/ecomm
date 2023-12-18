@@ -10,8 +10,6 @@ import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
  */
 export const handleMicroserviceExceptions = () =>
   catchError((error: any) => {
-    console.log(error);
-
     // Chek Prisma errors
     if (error.name === 'PrismaClientKnownRequestError') {
       throw new PrismaClientKnownRequestError(

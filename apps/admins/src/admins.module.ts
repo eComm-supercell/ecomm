@@ -2,31 +2,11 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import path from 'path';
 import { AdminAuthenticationModule } from './auth/authentication.module';
-import { ClientsModule, Transport } from '@nestjs/microservices';
-import { ServiceNamesService } from '@libs/common/src/service-names/service-names.service';
-import { ServiceNamesModule } from '@libs/common/src/service-names/service-names.module';
+import { CollectionsModule } from './collections/collections.module';
+import { CollectionTranslationModule } from './collection-translation/collection-translation.module';
 
 @Module({
   imports: [
-    ServiceNamesModule,
-    // Connect auth module as a client to auth microservice
-    ClientsModule.registerAsync({
-      clients: [
-        {
-          name: 'AUTHENTICATION',
-          useFactory: (serviceNames: ServiceNamesService) => {
-            const options = serviceNames.connectToAuthenticationService();
-            return {
-              transport: Transport.TCP,
-              options: {
-                host: options.name,
-                port: options.port,
-              },
-            };
-          },
-        },
-      ],
-    }),
     ConfigModule.forRoot({
       isGlobal: true,
       cache: true,
@@ -37,6 +17,8 @@ import { ServiceNamesModule } from '@libs/common/src/service-names/service-names
       ],
     }),
     AdminAuthenticationModule,
+    CollectionsModule,
+    CollectionTranslationModule,
   ],
 })
 export class AdminsModule {}

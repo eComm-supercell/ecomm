@@ -120,8 +120,8 @@ model collection {
   collection_product_variants collection_product_variants[]
   collection_translation      collection_translation[]
   id                          Int                           @id @default(autoincrement())
+  nestedCollections           collection[]                  @relation("collectionsHierarchy")
   parentCollection            collection?                   @relation("collectionsHierarchy", fields: [parentCollectionId], references: [id])
-  nestedCollectionss          collection[]                  @relation("collectionsHierarchy")
   parentCollectionId          Int?
 
   @@index([featuredAssetId], map: "collection_featuredAssetId")
@@ -139,18 +139,15 @@ model collection_product_variants {
 }
 
 model collection_translation {
-  createdAt    DateTime    @default(now()) @db.Timestamp(6)
-  updatedAt    DateTime    @default(now()) @db.Timestamp(6)
-  languageCode String      @db.VarChar
-  name         String      @db.VarChar
-  slug         String      @db.VarChar
+  createdAt    DateTime     @default(now()) @db.Timestamp(6)
+  updatedAt    DateTime     @default(now()) @db.Timestamp(6)
+  languageCode LanguageCode
+  name         String       @db.VarChar
+  slug         String       @db.VarChar
   description  String
-  id           Int         @id @default(autoincrement())
-  baseId       Int?
-  collection   collection? @relation(fields: [baseId], references: [id], onDelete: Cascade, onUpdate: NoAction)
-
-  @@index([baseId], map: "collection_translation_baseid_idx")
-  @@index([slug])
+  id           Int          @id @default(autoincrement())
+  collectionId Int?
+  collection   collection?  @relation(fields: [collectionId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 }
 
 model facet {
@@ -316,12 +313,12 @@ model product_variant {
   useGlobalOutOfStockThreshold                Boolean                                    @default(true)
   trackInventory                              String                                     @default("INHERIT") @db.VarChar
   id                                          Int                                        @id @default(autoincrement())
-  productId                                   Int?
   featuredAssetId                             Int?
   collection_product_variants_product_variant collection_product_variants[]
-  asset                                       asset?                                     @relation(fields: [featuredAssetId], references: [id], onUpdate: NoAction)
+  productId                                   Int?
   product                                     product?                                   @relation(fields: [productId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   product_variant_asset                       product_variant_asset[]
+  asset                                       asset?                                     @relation(fields: [featuredAssetId], references: [id], onUpdate: NoAction)
   product_variant_facet_values_facet_value    product_variant_facet_values_facet_value[]
   product_variant_options_product_option      product_variant_options_product_option[]
   product_variant_price                       product_variant_price[]
@@ -408,6 +405,11 @@ enum AuthenticationStartegy {
 
 enum AuthenticationIdentifier {
   GOOGLE
+}
+
+enum LanguageCode {
+  en
+  ar
 }
 
 enum DaysOff {

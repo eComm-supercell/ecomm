@@ -18,9 +18,14 @@ async function bootstrap() {
     .setTitle('Admins API')
     .setDescription('The Admins API description')
     .setVersion('1.0')
-    .addTag('Category')
-    .addTag('City')
-    .addTag('Api key')
+    .addTag(
+      'Collections',
+      'E-commerce collections are curated groups of related products, enhancing the shopping experience. Collections aid navigation, presenting products in organized themes. They are curated for visual appeal, facilitating quick exploration, and offer promotional opportunities. Improve user experience with structured and themed product groupings.',
+    )
+    .addTag(
+      'Collections Translation',
+      'The Collection translation contains the textual information like Name, Description and Slug. Each Collcetion MUST indeed have this information and Collection translation is where we keept it.',
+    )
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);

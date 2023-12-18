@@ -67,7 +67,6 @@ export class AuthController {
     try {
       return await this.customersAuthService.signupCustomerByEmail(body);
     } catch (error) {
-      console.error(error);
       // NOTE: Final error comming from microservice MUST always be RpcException
       throw new RpcException(error);
     }
