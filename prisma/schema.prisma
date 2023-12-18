@@ -112,60 +112,42 @@ model asset {
 }
 
 model collection {
-  createdAt                                                       DateTime                                      @default(now()) @db.Timestamp(6)
-  updatedAt                                                       DateTime                                      @default(now()) @db.Timestamp(6)
-  isRoot                                                          Boolean                                       @default(false)
-  position                                                        Int
-  isPrivate                                                       Boolean                                       @default(false)
-  id                                                              Int                                           @id @default(autoincrement())
-  parentId                                                        Int?
-  featuredAssetId                                                 Int?
-  asset                                                           asset?                                        @relation(fields: [featuredAssetId], references: [id], onUpdate: NoAction)
-  collection                                                      collection?                                   @relation("collectionTocollection", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  other_collection                                                collection[]                                  @relation("collectionTocollection")
-  collection_closure_collection_closure_id_ancestorTocollection   collection_closure[]                          @relation("collection_closure_id_ancestorTocollection")
-  collection_closure_collection_closure_id_descendantTocollection collection_closure[]                          @relation("collection_closure_id_descendantTocollection")
-  collection_product_variants_product_variant                     collection_product_variants_product_variant[]
-  collection_translation                                          collection_translation[]
+  createdAt                   DateTime                      @default(now()) @db.Timestamp(6)
+  updatedAt                   DateTime                      @default(now()) @db.Timestamp(6)
+  isPrivate                   Boolean                       @default(false)
+  featuredAssetId             Int?
+  asset                       asset?                        @relation(fields: [featuredAssetId], references: [id], onUpdate: NoAction)
+  collection_product_variants collection_product_variants[]
+  collection_translation      collection_translation[]
+  id                          Int                           @id @default(autoincrement())
+  nestedCollections           collection[]                  @relation("collectionsHierarchy")
+  parentCollection            collection?                   @relation("collectionsHierarchy", fields: [parentCollectionId], references: [id])
+  parentCollectionId          Int?
 
   @@index([featuredAssetId], map: "collection_featuredAssetId")
 }
 
-model collection_closure {
-  id_ancestor                                             Int
-  id_descendant                                           Int
-  collection_collection_closure_id_ancestorTocollection   collection @relation("collection_closure_id_ancestorTocollection", fields: [id_ancestor], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  collection_collection_closure_id_descendantTocollection collection @relation("collection_closure_id_descendantTocollection", fields: [id_descendant], references: [id], onDelete: Cascade, onUpdate: NoAction)
-
-  @@id([id_ancestor, id_descendant])
-  @@index([id_ancestor], map: "collection_closure_asc")
-  @@index([id_descendant], map: "collection_closure_desc")
-}
-
-model collection_product_variants_product_variant {
+model collection_product_variants {
   collectionId     Int
   productVariantId Int
   product_variant  product_variant @relation(fields: [productVariantId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "collection_product_variants_product_varia_productVariantId_fkey")
   collection       collection      @relation(fields: [collectionId], references: [id], onDelete: Cascade)
 
   @@id([collectionId, productVariantId])
-  @@index([collectionId], map: "collection_product_variants_product_variant_collectionid")
-  @@index([productVariantId], map: "collection_product_variants_product_variant_productvariantid")
+  @@index([collectionId], map: "collection_product_variants_collectionid")
+  @@index([productVariantId], map: "collection_product_variants_productvariantid")
 }
 
 model collection_translation {
-  createdAt    DateTime    @default(now()) @db.Timestamp(6)
-  updatedAt    DateTime    @default(now()) @db.Timestamp(6)
-  languageCode String      @db.VarChar
-  name         String      @db.VarChar
-  slug         String      @db.VarChar
+  createdAt    DateTime     @default(now()) @db.Timestamp(6)
+  updatedAt    DateTime     @default(now()) @db.Timestamp(6)
+  languageCode LanguageCode
+  name         String       @db.VarChar
+  slug         String       @db.VarChar
   description  String
-  id           Int         @id @default(autoincrement())
-  baseId       Int?
-  collection   collection? @relation(fields: [baseId], references: [id], onDelete: Cascade, onUpdate: NoAction)
-
-  @@index([baseId], map: "collection_translation_baseid_idx")
-  @@index([slug])
+  id           Int          @id @default(autoincrement())
+  collectionId Int?
+  collection   collection?  @relation(fields: [collectionId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 }
 
 model facet {
@@ -322,21 +304,21 @@ model product_translation {
 }
 
 model product_variant {
-  createdAt                                   DateTime                                      @default(now()) @db.Timestamp(6)
-  updatedAt                                   DateTime                                      @default(now()) @db.Timestamp(6)
-  deletedAt                                   DateTime?                                     @db.Timestamp(6)
-  enabled                                     Boolean                                       @default(true)
-  sku                                         String                                        @db.VarChar
-  outOfStockThreshold                         Int                                           @default(0)
-  useGlobalOutOfStockThreshold                Boolean                                       @default(true)
-  trackInventory                              String                                        @default("INHERIT") @db.VarChar
-  id                                          Int                                           @id @default(autoincrement())
-  productId                                   Int?
+  createdAt                                   DateTime                                   @default(now()) @db.Timestamp(6)
+  updatedAt                                   DateTime                                   @default(now()) @db.Timestamp(6)
+  deletedAt                                   DateTime?                                  @db.Timestamp(6)
+  enabled                                     Boolean                                    @default(true)
+  sku                                         String                                     @db.VarChar
+  outOfStockThreshold                         Int                                        @default(0)
+  useGlobalOutOfStockThreshold                Boolean                                    @default(true)
+  trackInventory                              String                                     @default("INHERIT") @db.VarChar
+  id                                          Int                                        @id @default(autoincrement())
   featuredAssetId                             Int?
-  collection_product_variants_product_variant collection_product_variants_product_variant[]
-  asset                                       asset?                                        @relation(fields: [featuredAssetId], references: [id], onUpdate: NoAction)
-  product                                     product?                                      @relation(fields: [productId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  collection_product_variants_product_variant collection_product_variants[]
+  productId                                   Int?
+  product                                     product?                                   @relation(fields: [productId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   product_variant_asset                       product_variant_asset[]
+  asset                                       asset?                                     @relation(fields: [featuredAssetId], references: [id], onUpdate: NoAction)
   product_variant_facet_values_facet_value    product_variant_facet_values_facet_value[]
   product_variant_options_product_option      product_variant_options_product_option[]
   product_variant_price                       product_variant_price[]
@@ -423,6 +405,11 @@ enum AuthenticationStartegy {
 
 enum AuthenticationIdentifier {
   GOOGLE
+}
+
+enum LanguageCode {
+  en
+  ar
 }
 
 enum DaysOff {
