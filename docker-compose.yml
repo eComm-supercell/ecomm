@@ -13,7 +13,8 @@ services:
       - .:/app
       - exclude:/app/node_modules/
     command: bash -c "dotenv -e .env.prod -- npx prisma migrate deploy
-      && dotenv -e .env.prod -- npx prisma db seed && npm run start:prod:auth"
+      && dotenv -e .env.prod -- npx prisma db seed
+      && npm run start:prod:auth"
 
     depends_on:
       - postgres
