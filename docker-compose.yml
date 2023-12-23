@@ -21,26 +21,26 @@ services:
       - meilisearch
     networks:
       - web
-  # shops:
-  #   container_name: shops
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile.shops
-  #     target: production
-  #   restart: on-failure
-  #   ports:
-  #     - 3001:3001
-  #   volumes:
-  #     - .:/app
-  #     - exclude:/app/node_modules/
-  #   command: npm run start:prod:shops
-  #   depends_on:
-  #     - postgres
-  #     - redis
-  #     - meilisearch
-  #     - auth
-  #   networks:
-  #     - web
+  shops:
+    container_name: shops
+    build:
+      context: .
+      dockerfile: Dockerfile.shops
+      target: production
+    restart: on-failure
+    ports:
+      - 3001:3001
+    volumes:
+      - .:/app
+      - exclude:/app/node_modules/
+    command: npm run start:prod:shops
+    depends_on:
+      - postgres
+      - redis
+      - meilisearch
+      - auth
+    networks:
+      - web
   # platform:
   #   container_name: platform
   #   build:
@@ -63,26 +63,26 @@ services:
   #     - auth
   #   networks:
   #     - web
-  # admins:
-  #   container_name: admins
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile.admins
-  #     target: production
-  #   restart: on-failure
-  #   ports:
-  #     - 3002:3002
-  #   volumes:
-  #     - .:/app
-  #     - exclude:/app/node_modules/
-  #   command: npm run start:prod:admins
-  #   depends_on:
-  #     - postgres
-  #     - redis
-  #     - meilisearch
-  #     - auth
-  #   networks:
-  #     - web
+  admins:
+    container_name: admins
+    build:
+      context: .
+      dockerfile: Dockerfile.admins
+      target: production
+    restart: on-failure
+    ports:
+      - 3002:3002
+    volumes:
+      - .:/app
+      - exclude:/app/node_modules/
+    command: npm run start:prod:admins
+    depends_on:
+      - postgres
+      - redis
+      - meilisearch
+      - auth
+    networks:
+      - web
   postgres:
     build:
       context: .
