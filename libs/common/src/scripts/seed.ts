@@ -91,7 +91,7 @@ async function seed() {
           isPrivate,
           asset: {
             connect: {
-              id: faker.datatype.number({ min: 1, max: 100 }), // random asset id 1-100
+              id: faker.number.int({ min: 1, max: 100 }), // random asset id 1-100
             },
           },
         },
@@ -123,7 +123,7 @@ async function seed() {
             },
             asset: {
               connect: {
-                id: faker.datatype.number({ min: 1, max: 100 }), // random asset id 1-100
+                id: faker.number.int({ min: 1, max: 100 }), // random asset id 1-100
               },
             },
           },

@@ -13,8 +13,8 @@ export function fakeasset(n: number) {
       fileSize: 500,
       width: 200,
       height: 200,
-      source: faker.image.imageUrl(200, 200, 'products', true),
-      preview: faker.image.imageUrl(100, 100, 'products', true),
+      source: faker.image.url({ width: 200, height: 200 }),
+      preview: faker.image.url({ width: 200, height: 200 }),
     });
   }
   return list;

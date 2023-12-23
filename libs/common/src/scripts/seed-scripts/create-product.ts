@@ -145,13 +145,13 @@ export async function createProduct(
   } = body;
 
   const productAssetsIds = [
-    faker.datatype.number({ min: 1, max: 99 }),
-    faker.datatype.number({ min: 1, max: 99 }),
+    faker.number.int({ min: 1, max: 99 }),
+    faker.number.int({ min: 1, max: 99 }),
   ];
 
   const productVariantsAssetsIds = [
-    faker.datatype.number({ min: 1, max: 99 }),
-    faker.datatype.number({ min: 1, max: 99 }),
+    faker.number.int({ min: 1, max: 99 }),
+    faker.number.int({ min: 1, max: 99 }),
   ];
 
   // Create product (translations, facets)
@@ -182,7 +182,7 @@ export async function createProduct(
               id: assetId,
             },
           },
-          position: faker.datatype.number({ min: 1, max: 10 }),
+          position: faker.number.int({ min: 1, max: 10 }),
         })),
       },
       asset: {
@@ -305,7 +305,7 @@ export async function createProduct(
                   id: assetId,
                 },
               },
-              position: faker.datatype.number({ min: 1, max: 10 }),
+              position: faker.number.int({ min: 1, max: 10 }),
             })),
           },
         })),
@@ -415,22 +415,18 @@ export function createProductsBulk(
           ],
         },
       ],
-      productFacetValues: [faker.datatype.number({ min: 1, max: 2 })],
+      productFacetValues: [faker.number.int({ min: 1, max: 2 })],
       productVariants: [
         {
           enabled: true,
           outOfStockThreshold: 10,
-          sku: `SKU-${faker.datatype.number({ max: 100000, min: 0 })}`,
+          sku: `SKU-${faker.number.int({ max: 100000, min: 0 })}`,
           trackInventory: 'YES',
           useGlobalOutOfStockThreshold: true,
-          price: faker.datatype.number({ min: 1, max: 3000 }),
+          price: faker.number.int({ min: 1, max: 3000 }),
           currencyCode: CurrencyCode.USD,
-          productVariantFacetValues: [
-            faker.datatype.number({ min: 1, max: 2 }),
-          ],
-          productVariantCollections: [
-            faker.datatype.number({ min: 1, max: 5 }),
-          ],
+          productVariantFacetValues: [faker.number.int({ min: 1, max: 2 })],
+          productVariantCollections: [faker.number.int({ min: 1, max: 5 })],
         },
       ],
     });
