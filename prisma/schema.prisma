@@ -93,22 +93,22 @@ model user_roles_role {
 }
 
 model asset {
-  createdAt             DateTime                @default(now()) @db.Timestamp(6)
-  updatedAt             DateTime                @default(now()) @db.Timestamp(6)
-  name                  String                  @db.VarChar
-  type                  String                  @db.VarChar
-  mimeType              String                  @db.VarChar
-  width                 Int                     @default(0)
-  height                Int                     @default(0)
-  fileSize              Int
-  source                String                  @db.VarChar
-  preview               String                  @db.VarChar
-  id                    Int                     @id @default(autoincrement())
-  collection            collection[]
-  product               product[]
-  product_asset         product_asset[]
-  product_variant       product_variant[]
-  product_variant_asset product_variant_asset[]
+  createdAt            DateTime                @default(now()) @db.Timestamp(6)
+  updatedAt            DateTime                @default(now()) @db.Timestamp(6)
+  name                 String                  @db.VarChar
+  type                 String                  @db.VarChar
+  mimeType             String                  @db.VarChar
+  width                Int                     @default(0)
+  height               Int                     @default(0)
+  fileSize             Int
+  source               String                  @db.VarChar
+  preview              String                  @db.VarChar
+  id                   Int                     @id @default(autoincrement())
+  collection           collection[]
+  products             product[]
+  productAssets        product_asset[]
+  productVariants      product_variant[]
+  productVariantAssets product_variant_asset[]
 }
 
 model collection {
@@ -129,9 +129,9 @@ model collection {
 
 model collection_product_variants {
   collectionId     Int
+  collection       collection      @relation(fields: [collectionId], references: [id], onDelete: Cascade)
   productVariantId Int
   product_variant  product_variant @relation(fields: [productVariantId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "collection_product_variants_product_varia_productVariantId_fkey")
-  collection       collection      @relation(fields: [collectionId], references: [id], onDelete: Cascade)
 
   @@id([collectionId, productVariantId])
   @@index([collectionId], map: "collection_product_variants_collectionid")
@@ -151,13 +151,13 @@ model collection_translation {
 }
 
 model facet {
-  createdAt         DateTime            @default(now()) @db.Timestamp(6)
-  updatedAt         DateTime            @default(now()) @db.Timestamp(6)
-  isPrivate         Boolean             @default(false)
-  code              String              @unique @db.VarChar
-  id                Int                 @id @default(autoincrement())
-  facet_translation facet_translation[]
-  facet_value       facet_value[]
+  createdAt    DateTime            @default(now()) @db.Timestamp(6)
+  updatedAt    DateTime            @default(now()) @db.Timestamp(6)
+  isPrivate    Boolean             @default(false)
+  code         String              @unique @db.VarChar
+  id           Int                 @id @default(autoincrement())
+  translations facet_translation[]
+  facetValues  facet_value[]
 }
 
 model facet_translation {
@@ -166,21 +166,22 @@ model facet_translation {
   languageCode String   @db.VarChar
   name         String   @db.VarChar
   id           Int      @id @default(autoincrement())
-  baseId       Int?
-  facet        facet?   @relation(fields: [baseId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  facetId      Int?
+  facet        facet?   @relation(fields: [facetId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
-  @@index([baseId], map: "facet_translation_baseid")
+  @@index([facetId], map: "facet_translation_baseid")
 }
 
 model facet_value {
-  createdAt                                DateTime                                   @default(now()) @db.Timestamp(6)
-  updatedAt                                DateTime                                   @default(now()) @db.Timestamp(6)
-  code                                     String                                     @db.VarChar
-  id                                       Int                                        @id @default(autoincrement())
-  facetId                                  Int
-  facet                                    facet                                      @relation(fields: [facetId], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  facet_value_translation                  facet_value_translation[]
-  product_variant_facet_values_facet_value product_variant_facet_values_facet_value[]
+  createdAt       DateTime                       @default(now()) @db.Timestamp(6)
+  updatedAt       DateTime                       @default(now()) @db.Timestamp(6)
+  code            String                         @db.VarChar
+  id              Int                            @id @default(autoincrement())
+  facetId         Int
+  facet           facet                          @relation(fields: [facetId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  translations    facet_value_translation[]
+  productVariants product_variant_facet_values[]
+  products        product_facet_values[]
 
   @@index([facetId], map: "facet_value_facetid")
 }
@@ -191,10 +192,10 @@ model facet_value_translation {
   languageCode String       @db.VarChar
   name         String       @db.VarChar
   id           Int          @id @default(autoincrement())
-  baseId       Int?
-  facet_value  facet_value? @relation(fields: [baseId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  facetValueId Int?
+  facetValues  facet_value? @relation(fields: [facetValueId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
-  @@index([baseId], map: "facet_value_translation_baseid")
+  @@index([facetValueId], map: "facet_value_translation_baseid")
 }
 
 model global_settings {
@@ -207,29 +208,28 @@ model global_settings {
 }
 
 model product {
-  createdAt            DateTime               @default(now()) @db.Timestamp(6)
-  updatedAt            DateTime               @default(now()) @db.Timestamp(6)
-  deletedAt            DateTime?              @db.Timestamp(6)
-  enabled              Boolean                @default(true)
-  id                   Int                    @id @default(autoincrement())
-  featuredAssetId      Int?
-  asset                asset?                 @relation(fields: [featuredAssetId], references: [id], onUpdate: NoAction)
-  product_asset        product_asset[]
-  product_option_group product_option_group[]
-  product_translation  product_translation[]
-  product_variant      product_variant[]
-
-  @@index([featuredAssetId], map: "product_featuredassetid")
+  createdAt     DateTime               @default(now()) @db.Timestamp(6)
+  updatedAt     DateTime               @default(now()) @db.Timestamp(6)
+  deletedAt     DateTime?              @db.Timestamp(6)
+  enabled       Boolean                @default(true)
+  id            Int                    @id @default(autoincrement())
+  productAssets product_asset[]
+  asset         asset?                 @relation(fields: [assetId], references: [id])
+  assetId       Int?
+  translations  product_translation[]
+  variants      product_variant[]
+  optionsGroup  product_option_group[]
+  facets        product_facet_values[]
 }
 
 model product_asset {
   createdAt DateTime @default(now()) @db.Timestamp(6)
   updatedAt DateTime @default(now()) @db.Timestamp(6)
-  assetId   Int
   position  Int
-  productId Int
   id        Int      @id @default(autoincrement())
+  assetId   Int
   asset     asset    @relation(fields: [assetId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  productId Int
   product   product  @relation(fields: [productId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@index([assetId], map: "product_asset_assetid")
@@ -237,29 +237,27 @@ model product_asset {
 }
 
 model product_option {
-  createdAt                              DateTime                                 @default(now()) @db.Timestamp(6)
-  updatedAt                              DateTime                                 @default(now()) @db.Timestamp(6)
-  deletedAt                              DateTime?                                @db.Timestamp(6)
-  code                                   String                                   @db.VarChar
-  id                                     Int                                      @id @default(autoincrement())
-  groupId                                Int
-  product_option_group                   product_option_group                     @relation(fields: [groupId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  product_option_translation             product_option_translation[]
-  product_variant_options_product_option product_variant_options_product_option[]
-
-  @@index([groupId], map: "product_option_groupid")
+  createdAt               DateTime                     @default(now()) @db.Timestamp(6)
+  updatedAt               DateTime                     @default(now()) @db.Timestamp(6)
+  deletedAt               DateTime?                    @db.Timestamp(6)
+  code                    String                       @db.VarChar
+  id                      Int                          @id @default(autoincrement())
+  productOptiongroupId    Int
+  productOptionGroup      product_option_group         @relation(fields: [productOptiongroupId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  translations            product_option_translation[]
+  product_variant_options product_variant_options[]
 }
 
 model product_option_group {
-  createdAt                        DateTime                           @default(now()) @db.Timestamp(6)
-  updatedAt                        DateTime                           @default(now()) @db.Timestamp(6)
-  deletedAt                        DateTime?                          @db.Timestamp(6)
-  code                             String                             @db.VarChar
-  id                               Int                                @id @default(autoincrement())
-  productId                        Int?
-  product_option                   product_option[]
-  product                          product?                           @relation(fields: [productId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  product_option_group_translation product_option_group_translation[]
+  createdAt      DateTime                           @default(now()) @db.Timestamp(6)
+  updatedAt      DateTime                           @default(now()) @db.Timestamp(6)
+  deletedAt      DateTime?                          @db.Timestamp(6)
+  code           String                             @db.VarChar
+  id             Int                                @id @default(autoincrement())
+  productId      Int?
+  product        product?                           @relation(fields: [productId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  productOptions product_option[]
+  translations   product_option_group_translation[]
 
   @@index([productId], map: "product_option_group_productid")
 }
@@ -270,22 +268,18 @@ model product_option_group_translation {
   languageCode         String                @db.VarChar
   name                 String                @db.VarChar
   id                   Int                   @id @default(autoincrement())
-  baseId               Int?
-  product_option_group product_option_group? @relation(fields: [baseId], references: [id], onDelete: Cascade, onUpdate: NoAction)
-
-  @@index([baseId], map: "product_option_group_translation_baseid")
+  productOptionGroupId Int
+  productOptionGroup   product_option_group? @relation(fields: [productOptionGroupId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 }
 
 model product_option_translation {
-  createdAt      DateTime        @default(now()) @db.Timestamp(6)
-  updatedAt      DateTime        @default(now()) @db.Timestamp(6)
-  languageCode   String          @db.VarChar
-  name           String          @db.VarChar
-  id             Int             @id @default(autoincrement())
-  baseId         Int?
-  product_option product_option? @relation(fields: [baseId], references: [id], onDelete: Cascade, onUpdate: NoAction)
-
-  @@index([baseId], map: "product_option_translation_baseid")
+  createdAt       DateTime        @default(now()) @db.Timestamp(6)
+  updatedAt       DateTime        @default(now()) @db.Timestamp(6)
+  languageCode    String          @db.VarChar
+  name            String          @db.VarChar
+  id              Int             @id @default(autoincrement())
+  productOptionId Int?
+  product_option  product_option? @relation(fields: [productOptionId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 }
 
 model product_translation {
@@ -296,96 +290,99 @@ model product_translation {
   slug         String   @db.VarChar
   description  String
   id           Int      @id @default(autoincrement())
-  baseId       Int?
-  product      product? @relation(fields: [baseId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-
-  @@index([slug], map: "IDX_f4a2ec16ba86d277b6faa0b67b")
-  @@index([baseId], map: "product_translation_baseid")
+  productId    Int?
+  product      product? @relation(fields: [productId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model product_variant {
-  createdAt                                   DateTime                                   @default(now()) @db.Timestamp(6)
-  updatedAt                                   DateTime                                   @default(now()) @db.Timestamp(6)
-  deletedAt                                   DateTime?                                  @db.Timestamp(6)
-  enabled                                     Boolean                                    @default(true)
-  sku                                         String                                     @db.VarChar
-  outOfStockThreshold                         Int                                        @default(0)
-  useGlobalOutOfStockThreshold                Boolean                                    @default(true)
-  trackInventory                              String                                     @default("INHERIT") @db.VarChar
-  id                                          Int                                        @id @default(autoincrement())
-  featuredAssetId                             Int?
-  collection_product_variants_product_variant collection_product_variants[]
-  productId                                   Int?
-  product                                     product?                                   @relation(fields: [productId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  product_variant_asset                       product_variant_asset[]
-  asset                                       asset?                                     @relation(fields: [featuredAssetId], references: [id], onUpdate: NoAction)
-  product_variant_facet_values_facet_value    product_variant_facet_values_facet_value[]
-  product_variant_options_product_option      product_variant_options_product_option[]
-  product_variant_price                       product_variant_price[]
-  product_variant_translation                 product_variant_translation[]
+  createdAt                    DateTime                       @default(now()) @db.Timestamp(6)
+  updatedAt                    DateTime                       @default(now()) @db.Timestamp(6)
+  deletedAt                    DateTime?                      @db.Timestamp(6)
+  enabled                      Boolean                        @default(true)
+  sku                          String?                        @db.VarChar
+  outOfStockThreshold          Int?                           @default(0)
+  useGlobalOutOfStockThreshold Boolean?                       @default(true)
+  trackInventory               String?                        @default("INHERIT") @db.VarChar
+  id                           Int                            @id @default(autoincrement())
+  assetId                      Int?
+  asset                        asset?                         @relation(fields: [assetId], references: [id], onUpdate: NoAction)
+  productId                    Int?
+  product                      product?                       @relation(fields: [productId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  price                        product_variant_price[]
+  translations                 product_variant_translation[]
+  collections                  collection_product_variants[]
+  productVariantAssets         product_variant_asset[]
+  options                      product_variant_options[]
+  facetValues                  product_variant_facet_values[]
 
-  @@index([featuredAssetId], map: "product_variant_featuredassetid")
+  @@index([assetId], map: "product_variant_featuredassetid")
   @@index([productId], map: "product_variant_productid")
 }
 
 model product_variant_asset {
   createdAt        DateTime        @default(now()) @db.Timestamp(6)
   updatedAt        DateTime        @default(now()) @db.Timestamp(6)
-  assetId          Int
-  position         Int
-  productVariantId Int
   id               Int             @id @default(autoincrement())
+  position         Int
+  assetId          Int
   asset            asset           @relation(fields: [assetId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  productVariantId Int
   product_variant  product_variant @relation(fields: [productVariantId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@index([assetId], map: "product_variant_asset_id")
   @@index([productVariantId], map: "product_variant_asset_prod_variantid")
 }
 
-model product_variant_facet_values_facet_value {
+model product_variant_facet_values {
   productVariantId Int
+  product_variant  product_variant @relation(fields: [productVariantId], references: [id], onDelete: Cascade)
   facetValueId     Int
   facet_value      facet_value     @relation(fields: [facetValueId], references: [id], onDelete: Cascade)
-  product_variant  product_variant @relation(fields: [productVariantId], references: [id], onDelete: Cascade)
 
   @@id([productVariantId, facetValueId])
   @@index([facetValueId], map: "product_variant_facet_values_facet_value_facetvalueid")
   @@index([productVariantId], map: "product_variant_facet_values_facet_value_productvariantid")
 }
 
-model product_variant_options_product_option {
+model product_facet_values {
+  productId    Int
+  product      product     @relation(fields: [productId], references: [id], onDelete: Cascade)
+  facetValueId Int
+  facet_value  facet_value @relation(fields: [facetValueId], references: [id], onDelete: Cascade)
+
+  @@id([productId, facetValueId])
+}
+
+model product_variant_options {
   productVariantId Int
+  product_variant  product_variant @relation(fields: [productVariantId], references: [id], onDelete: Cascade)
   productOptionId  Int
   product_option   product_option  @relation(fields: [productOptionId], references: [id], onDelete: Cascade)
-  product_variant  product_variant @relation(fields: [productVariantId], references: [id], onDelete: Cascade)
 
   @@id([productVariantId, productOptionId])
-  @@index([productVariantId], map: "product_variant_options_product_option_productvariantid")
 }
 
 model product_variant_price {
   createdAt       DateTime         @default(now()) @db.Timestamp(6)
   updatedAt       DateTime         @default(now()) @db.Timestamp(6)
-  currencyCode    String           @db.VarChar
+  currencyCode    CurrencyCode
   id              Int              @id @default(autoincrement())
   channelId       Int?
   price           Int
   variantId       Int?
   product_variant product_variant? @relation(fields: [variantId], references: [id], onDelete: Cascade, onUpdate: NoAction)
-
-  @@index([variantId], map: "product_variant_price_variantid")
 }
 
 model product_variant_translation {
-  createdAt       DateTime         @default(now()) @db.Timestamp(6)
-  updatedAt       DateTime         @default(now()) @db.Timestamp(6)
-  languageCode    String           @db.VarChar
-  name            String           @db.VarChar
-  id              Int              @id @default(autoincrement())
-  baseId          Int?
-  product_variant product_variant? @relation(fields: [baseId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  createdAt        DateTime         @default(now()) @db.Timestamp(6)
+  updatedAt        DateTime         @default(now()) @db.Timestamp(6)
+  languageCode     String           @db.VarChar
+  name             String           @db.VarChar
+  id               Int              @id @default(autoincrement())
+  productVariantId Int?
+  product_variant  product_variant? @relation(fields: [productVariantId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
-  @@index([baseId], map: "product_variant_translation_baseid")
+  @@index([productVariantId], map: "product_variant_translation_baseid")
 }
 
 enum UserType {
@@ -410,6 +407,11 @@ enum AuthenticationIdentifier {
 enum LanguageCode {
   en
   ar
+}
+
+enum CurrencyCode {
+  USD
+  IQD
 }
 
 enum DaysOff {
