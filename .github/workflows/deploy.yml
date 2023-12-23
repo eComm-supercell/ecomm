@@ -21,4 +21,4 @@ jobs:
           docker container rm platform shops admins auth redis postgres meilisearch nginx || true
           docker system prune -f || true
       - name: Run docker compose
-        run: docker compose -f docker-compose.yml up -d --build --remove-orphans
+        run: docker compose -f docker-compose.yml up -d --build --no-cache --remove-orphans
