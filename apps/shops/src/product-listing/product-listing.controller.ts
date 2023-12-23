@@ -47,6 +47,15 @@ export class ProductListingController {
     return this.productListingService.findAllCollectionVariants(+id);
   }
 
+  /**
+   * Find a product variant by id. Each variant has:
+   * - List of translations
+   * - Asset (image)
+   * - Product it blongs to
+   *
+   * @param id
+   * @returns
+   */
   @ApiOkResponse({
     type: GetVariant,
   })
