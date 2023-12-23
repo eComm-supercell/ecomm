@@ -7,6 +7,7 @@ import path from 'path';
 import { SharedAuthModule } from '@libs/common/src/auth/sharedAuth.module';
 import { CustomersAuthenticationModule } from './auth/authentication.module';
 import { ProfileModule } from './profile/profile.module';
+import { ProductListingModule } from './product-listing/product-listing.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { ProfileModule } from './profile/profile.module';
       ],
     }),
     ProfileModule,
+    ProductListingModule,
   ],
   controllers: [CustomersController],
   providers: [CustomersService],
