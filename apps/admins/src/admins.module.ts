@@ -4,6 +4,8 @@ import path from 'path';
 import { AdminAuthenticationModule } from './auth/authentication.module';
 import { CollectionsModule } from './collections/collections.module';
 import { CollectionTranslationModule } from './collection-translation/collection-translation.module';
+import { ProductsModule } from './products/products.module';
+import { FacetsModule } from './facets/facets.module';
 
 @Module({
   imports: [
@@ -19,6 +21,8 @@ import { CollectionTranslationModule } from './collection-translation/collection
     AdminAuthenticationModule,
     CollectionsModule,
     CollectionTranslationModule,
+    ProductsModule,
+    FacetsModule,
   ],
 })
 export class AdminsModule {}
