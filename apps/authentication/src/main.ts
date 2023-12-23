@@ -1,8 +1,8 @@
 import { NestFactory } from '@nestjs/core';
 import { Transport } from '@nestjs/microservices';
+import { SeedService } from '@libs/common/src/scripts/seed/seed.service';
 import { AuthenticationModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
-import { SeedService } from '@libs/common/src/scripts/seed/seed.service';
 
 async function bootstrap() {
   const app = await NestFactory.createMicroservice(AuthenticationModule, {
@@ -22,7 +22,8 @@ async function bootstrap() {
   );
 
   // Seed the database
-  await app.get(SeedService).seed();
+  const seed = app.get<SeedService>(SeedService);
+  await seed.seed();
   await app.listen();
 }
 void bootstrap();
