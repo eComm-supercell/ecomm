@@ -1,8 +1,10 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { ProductListingService } from './product-listing.service';
-import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOkResponse, ApiParam, ApiTags } from '@nestjs/swagger';
 import { GetCollectionsDto } from './dto/get-collections.dto';
 import { GetVariant, VariantsOfCollection } from './dto/get-variants.dto';
+import { KeysetPaginationDto } from '@libs/common/src/dto/keyset-params-pagination.dto';
+import { apiPaginatedResponse } from '@libs/common/src/dto/apiPaginatedResponse.decorator';
 
 @ApiTags('Products Listing')
 @Controller('product-listing')
@@ -21,12 +23,9 @@ export class ProductListingController {
    * @returns
    */
   @Get('collections')
-  @ApiOkResponse({
-    type: GetCollectionsDto,
-    isArray: true,
-  })
-  getCollections() {
-    return this.productListingService.findAllCollections();
+  @apiPaginatedResponse(GetCollectionsDto)
+  getCollections(@Query() params: KeysetPaginationDto) {
+    return this.productListingService.findAllCollections(params);
   }
 
   /**
@@ -39,12 +38,17 @@ export class ProductListingController {
    * @returns
    */
   @Get('collection-variants/:id')
-  @ApiOkResponse({
-    type: VariantsOfCollection,
-    isArray: true,
+  @ApiParam({
+    name: 'id',
+    type: Number,
+    description: 'Collection ID',
   })
-  getCollectionVariants(@Param('id') id: string) {
-    return this.productListingService.findAllCollectionVariants(+id);
+  @apiPaginatedResponse(VariantsOfCollection)
+  getCollectionVariants(
+    @Param('id') id: string,
+    @Query() params: KeysetPaginationDto,
+  ) {
+    return this.productListingService.findAllCollectionVariants(+id, params);
   }
 
   /**
