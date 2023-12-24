@@ -1,5 +1,8 @@
+import { KeysetPaginationDto } from '@libs/common/src/dto/keyset-params-pagination.dto';
+import { ToBoolean } from '@libs/common/src/utils/toBoolean';
 import { ApiProperty } from '@nestjs/swagger';
 import { LanguageCode } from '@prisma/client';
+import { IsBoolean, IsOptional } from 'class-validator';
 
 class GetCollectionsTranslationDto {
   name: string;
@@ -59,6 +62,19 @@ export class GetCollectionsDto {
   @ApiProperty({
     type: NestedCollection,
     description: 'Nested collections',
+    isArray: true,
   })
   nestedCollections: NestedCollection[];
+}
+
+export class QueryCollectionsParamsDto extends KeysetPaginationDto {
+  @ApiProperty({
+    type: Boolean,
+    required: false,
+    description: 'Include nested collections',
+  })
+  @IsOptional()
+  @ToBoolean()
+  @IsBoolean()
+  children?: boolean;
 }
