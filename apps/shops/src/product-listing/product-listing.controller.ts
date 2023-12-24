@@ -1,8 +1,15 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
 import { ProductListingService } from './product-listing.service';
 import { ApiOkResponse, ApiParam, ApiTags } from '@nestjs/swagger';
-import { GetCollectionsDto } from './dto/get-collections.dto';
-import { GetVariant, VariantsOfCollection } from './dto/get-variants.dto';
+import {
+  GetCollectionsDto,
+  QueryCollectionsParamsDto,
+} from './dto/get-collections.dto';
+import {
+  GetProductById,
+  GetVariant,
+  ProductsOfCollection,
+} from './dto/get-variants.dto';
 import { KeysetPaginationDto } from '@libs/common/src/dto/keyset-params-pagination.dto';
 import { apiPaginatedResponse } from '@libs/common/src/dto/apiPaginatedResponse.decorator';
 
@@ -17,38 +24,63 @@ export class ProductListingController {
    *  - Asset (image)
    *  - Nested collections
    *
-   * While child collections have:
+   * ApiOkResponsed collections have:
    * - List of translations
-   * - Asset (image)
+   * ApiOkResponse
    * @returns
    */
   @Get('collections')
   @apiPaginatedResponse(GetCollectionsDto)
-  getCollections(@Query() params: KeysetPaginationDto) {
+  getCollections(@Query() params: QueryCollectionsParamsDto) {
     return this.productListingService.findAllCollections(params);
   }
 
   /**
-   * Find all product variants inside a collection. Each variant has:
+   * Find all products inside a collection. Each product has:
    * - List of translations
    * - Asset (image)
-   * - Product it blongs to
+   * - Variants
+   * - Collection it belongs to
+   * - Option groups (size, color, etc) and option values (small, red, etc)
+   *
+   *
    *
    * @param id
    * @returns
    */
-  @Get('collection-variants/:id')
+  @Get('products-of-collection/:id')
   @ApiParam({
     name: 'id',
     type: Number,
     description: 'Collection ID',
   })
-  @apiPaginatedResponse(VariantsOfCollection)
+  @apiPaginatedResponse(ProductsOfCollection)
   getCollectionVariants(
     @Param('id') id: string,
     @Query() params: KeysetPaginationDto,
   ) {
     return this.productListingService.findAllCollectionVariants(+id, params);
+  }
+
+  /**
+   * Find a product by Id. Each product has:
+   * - List of translations
+   * - Asset (image)
+   * - Variants
+   * - Collection it belongs to
+   * - Option groups (size, color, etc) and option values (small, red, etc)
+   *
+   *
+   *
+   * @param id
+   * @returns
+   */
+  @ApiOkResponse({
+    type: GetProductById,
+  })
+  @Get('product/:id')
+  getProduct(@Param('id') id: string) {
+    return this.productListingService.findProduct(+id);
   }
 
   /**
