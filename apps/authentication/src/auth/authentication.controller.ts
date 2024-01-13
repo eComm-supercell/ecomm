@@ -95,6 +95,7 @@ export class AuthController {
     try {
       return await this.customersAuthService.customerIdpSignin(body);
     } catch (error) {
+      console.log(error);
       throw new RpcException(error);
     }
   }

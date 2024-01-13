@@ -4,21 +4,14 @@ import string_decoder from 'string_decoder';
 import { exclude } from '@libs/common/src/utils/exclude';
 import { SharedUsersService } from '@libs/common/src/users/users.service';
 import {
-  GoogleAuthProvider,
-  OAuthProvider,
-  User,
-  getAuth,
-  signInWithCredential,
-} from 'firebase/auth';
-import {
   CustomerIdpSignupDto,
   CustomersEmailPasswordSignupDto,
-  // CustomersSignupDto,
 } from '@libs/common/src/auth/dto/customers/customers-native-startegy/signup.dto';
 import { PrismaService } from '@libs/common/src/prisma/prisma.service';
 import { SharedAuthService } from '@libs/common/src/auth/sharedAuth.service';
 import { CustomerNativeLoginDto } from '@libs/common/src/auth/dto/customers/customers-native-startegy/login.dto';
 import { RpcException } from '@nestjs/microservices';
+import { FirebaseService } from '@libs/common/src/firebase/firebase.service';
 
 @Injectable()
 export class CustomersAuthService {
@@ -26,6 +19,7 @@ export class CustomersAuthService {
     private userService: SharedUsersService,
     private prisma: PrismaService,
     private sharedAuthService: SharedAuthService,
+    private firebaseService: FirebaseService,
   ) {}
 
   async me(userId: number) {
@@ -183,31 +177,42 @@ export class CustomersAuthService {
    *
    */
   async customerIdpSignin(data: CustomerIdpSignupDto) {
-    const auth = getAuth(); // firebase auth
-    let user: User;
-
+    const user: {
+      email?: string;
+      displayName?: string;
+    } = {
+      email: undefined,
+    };
     const { idToken, provider } = data; // destruct data
 
+    // Decode token and get user data
     if (provider === 'google') {
-      // Build Firebase credential with the Google ID token.
-      const authCredential = GoogleAuthProvider.credential(data.idToken);
-      const signinResponse = await signInWithCredential(auth, authCredential);
-      user = signinResponse.user;
+      const decodedToken = await this.firebaseService.verifyIdToken(idToken);
+      const userAccount = await this.firebaseService.getUserByUID(
+        decodedToken.uid,
+      );
+
+      if (userAccount) {
+        user.email = userAccount.email;
+        user.displayName = userAccount.displayName;
+      }
     } else {
+      // TODO: implement apple sign in
       // Build Firebase credential with the Apple ID token.
-      const apple = new OAuthProvider('apple.com');
-      const authCredential = apple.credential({
-        idToken: idToken,
-        rawNonce: 'unhashedNonce',
-      });
-      const signinResponse = await signInWithCredential(auth, authCredential);
-      user = signinResponse.user;
+      // const apple = new OAuthProvider('apple.com');
+      // const authCredential = apple.credential({
+      //   idToken: idToken,
+      //   rawNonce: 'unhashedNonce',
+      // });
+      // const signinResponse = await signInWithCredential(auth, authCredential);
+      // user = signinResponse.user;
     }
 
     // find user in system database
     const userExist = await this.userService.findCustomerByEmail(
       user.email as string,
     );
+    // if user exist, return user data with system token
     if (userExist) {
       return {
         // Generate JWT token
@@ -217,25 +222,26 @@ export class CustomersAuthService {
         }),
         ...userExist,
       };
-    }
+    } else {
+      // Add user to system database if not exist
+      await this.userService.createCustomerByEmailAndName(
+        user.email as string,
+        user.displayName || '', // use empty string if displayName is undefined
+      );
+      const newUser = await this.userService.findCustomerByEmail(
+        user.email as string,
+      );
 
-    // Add user to system database if not exist
-    await this.userService.createCustomerByEmailAndName(
-      user.email as string,
-      user.displayName as string,
-    );
-    const newUser = await this.userService.findCustomerByEmail(
-      user.email as string,
-    );
-
-    if (newUser) {
-      return {
-        token: await this.sharedAuthService.generateJWtToken({
-          id: newUser.id,
-          email: newUser.emailAddress,
-        }),
-        ...newUser,
-      };
+      // Type guard condition
+      if (newUser) {
+        return {
+          token: await this.sharedAuthService.generateJWtToken({
+            id: newUser.id,
+            email: newUser.emailAddress,
+          }),
+          ...newUser,
+        };
+      }
     }
   }
 

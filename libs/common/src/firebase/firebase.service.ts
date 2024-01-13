@@ -8,6 +8,20 @@ export class FirebaseService {
   constructor(
     @Inject('FIREBASE_ADMIN') private readonly firebaseAdmin: admin.app.App,
   ) {}
+  async verifyIdToken(idToken: string) {
+    try {
+      const decodedToken = await this.firebaseAdmin
+        .auth()
+        .verifyIdToken(idToken, true);
+      console.log('decoded token', decodedToken);
+
+      return decodedToken;
+    } catch (error) {
+      console.log(error);
+
+      throw new Error('Error verifying Firebase ID token: ' + error.message);
+    }
+  }
   async createUser(body: CreateRequest) {
     try {
       await this.firebaseAdmin.auth().createUser(body);

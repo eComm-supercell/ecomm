@@ -5,15 +5,11 @@ import { PrismaService } from '@libs/common/src/prisma/prisma.service';
 // import { CustomersSignupDto } from '../auth/dto/customers/customers-native-startegy/signup.dto';
 // import Role from '@libs/common/src/enums/role.enum';
 // import IdentityProviders from '@libs/common/src/enums/provider.enum';
-import { FirebaseService } from '@libs/common/src/firebase/firebase.service';
 // import { AppCustomException } from '@libs/common/src/exceptions/custom-exception';
 
 @Injectable()
 export class SharedUsersService {
-  constructor(
-    private prisma: PrismaService,
-    private firebase: FirebaseService,
-  ) {}
+  constructor(private prisma: PrismaService) {}
 
   /**
    * Customers (Shops API)
@@ -24,7 +20,7 @@ export class SharedUsersService {
    * @returns
    */
   async findCustomerByEmail(email: string) {
-    const existingUser = await this.prisma.user.findUniqueOrThrow({
+    const existingUser = await this.prisma.user.findUnique({
       where: {
         emailAddress: email,
       },
@@ -33,38 +29,39 @@ export class SharedUsersService {
         profile: true,
       },
     });
-
-    const {
-      id,
-      createdAt,
-      emailAddress,
-      updatedAt,
-      verified,
-      profile: existingUserProfile,
-      authentication_method: existingUserAuthMethod,
-    } = existingUser;
-    if (existingUserProfile && existingUserAuthMethod) {
+    if (existingUser) {
       const {
-        firstName,
-        lastName,
-        gender,
-        id: existingUserProfileId,
-      } = existingUserProfile;
-      const { type, strategy, identifier } = existingUserAuthMethod;
-      return {
         id,
         createdAt,
-        updatedAt,
         emailAddress,
+        updatedAt,
         verified,
-        firstName,
-        lastName,
-        gender,
-        profileId: existingUserProfileId,
-        userType: type,
-        authenticationMethod: strategy,
-        identifier,
-      };
+        profile: existingUserProfile,
+        authentication_method: existingUserAuthMethod,
+      } = existingUser;
+      if (existingUserProfile && existingUserAuthMethod) {
+        const {
+          firstName,
+          lastName,
+          gender,
+          id: existingUserProfileId,
+        } = existingUserProfile;
+        const { type, strategy, identifier } = existingUserAuthMethod;
+        return {
+          id,
+          createdAt,
+          updatedAt,
+          emailAddress,
+          verified,
+          firstName,
+          lastName,
+          gender,
+          profileId: existingUserProfileId,
+          userType: type,
+          authenticationMethod: strategy,
+          identifier,
+        };
+      }
     }
   }
 
