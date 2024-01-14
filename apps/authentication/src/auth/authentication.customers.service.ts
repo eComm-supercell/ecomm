@@ -216,7 +216,7 @@ export class CustomersAuthService {
     if (userExist) {
       return {
         // Generate JWT token
-        token: this.sharedAuthService.generateJWtToken({
+        token: await this.sharedAuthService.generateJWtToken({
           id: userExist.id,
           email: userExist.emailAddress,
         }),
