@@ -21,4 +21,13 @@ export class CreateCollectionDto {
   @IsOptional()
   @IsInt({ each: true })
   nestedCollectionIds?: number[];
+
+  @ApiProperty({
+    description: 'Featured asset Id',
+    example: 1,
+    required: false,
+  })
+  @IsOptional()
+  @IsInt()
+  featuredAssetId?: number;
 }

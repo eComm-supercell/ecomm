@@ -40,11 +40,16 @@ export class CollectionsService {
         nestedCollections: {
           connect: nestedCollections,
         },
-        collection_translation: {
-          connect: {
-            id: translationKey,
-          },
-        },
+        collection_translation: translationKey
+          ? { connect: { id: translationKey } }
+          : undefined,
+        asset: body.featuredAssetId
+          ? {
+              connect: {
+                id: body.featuredAssetId,
+              },
+            }
+          : undefined,
       },
       where: {
         id: collectionId,
@@ -63,6 +68,7 @@ export class CollectionsService {
           },
         },
         collection_translation: true,
+        asset: true,
       },
     });
   }
@@ -77,6 +83,7 @@ export class CollectionsService {
           },
         },
         collection_translation: true,
+        asset: true,
       },
     });
   }

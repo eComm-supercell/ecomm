@@ -27,6 +27,7 @@ async function bootstrap() {
       'The Collection translation contains the textual information like Name, Description and Slug. Each Collcetion MUST indeed have this information and Collection translation is where we keept it.',
     )
     .addTag('Products')
+    .addTag('Assets', 'Media assets like images, videos, audios, etc.')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);

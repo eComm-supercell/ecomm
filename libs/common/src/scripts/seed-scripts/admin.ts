@@ -26,34 +26,23 @@ export function collectionsList() {
       parentCollectionId: undefined,
       featuredAssetId: undefined,
       translation: {
-        languageCode: 'en',
-        name: 'Electronics',
-        slug: 'electronics',
-        description: 'Explore the latest electronic gadgets and devices.',
+        languageCode: 'ar',
+        name: 'قسم الأطفال مع تقديم الخدمات',
+        slug: 'الأطفال',
+        description: 'قسم الأطفال مع تقديم الخدمات الإضافية',
       },
       childCollections: [
-        {
-          isPrivate: false,
-          parentCollectionId: 1,
-          featuredAssetId: undefined,
-          translation: {
-            languageCode: 'en',
-            name: 'Smartphones',
-            slug: 'smartphones',
-            description: 'Discover the latest smartphones and accessories.',
-          },
-        },
-        {
-          isPrivate: false,
-          parentCollectionId: 1,
-          featuredAssetId: undefined,
-          translation: {
-            languageCode: 'en',
-            name: 'Laptops',
-            slug: 'laptops',
-            description: 'Find powerful laptops for work and entertainment.',
-          },
-        },
+        // {
+        //   isPrivate: false,
+        //   parentCollectionId: 1,
+        //   featuredAssetId: undefined,
+        //   translation: {
+        //     languageCode: 'en',
+        //     name: 'Smartphones',
+        //     slug: 'smartphones',
+        //     description: 'Discover the latest smartphones and accessories.',
+        //   },
+        // }
       ],
     },
     {
@@ -61,34 +50,23 @@ export function collectionsList() {
       parentCollectionId: undefined,
       featuredAssetId: undefined,
       translation: {
-        languageCode: 'en',
-        name: 'Clothing',
-        slug: 'clothing',
-        description: 'Discover trendy and fashionable clothing items.',
+        languageCode: 'ar',
+        name: 'قسم الأكل المنزلي',
+        slug: 'الأطعمة',
+        description: 'قسم الأكل المنزلي',
       },
       childCollections: [
-        {
-          isPrivate: false,
-          parentCollectionId: 4,
-          featuredAssetId: undefined,
-          translation: {
-            languageCode: 'en',
-            name: "Men's Fashion",
-            slug: 'mens-fashion',
-            description: "Explore the latest trends in men's fashion.",
-          },
-        },
-        {
-          isPrivate: false,
-          parentCollectionId: 4,
-          featuredAssetId: undefined,
-          translation: {
-            languageCode: 'en',
-            name: "Women's Fashion",
-            slug: 'womens-fashion',
-            description: "Shop for stylish women's fashion items.",
-          },
-        },
+        // {
+        //   isPrivate: false,
+        //   parentCollectionId: 1,
+        //   featuredAssetId: undefined,
+        //   translation: {
+        //     languageCode: 'en',
+        //     name: 'Smartphones',
+        //     slug: 'smartphones',
+        //     description: 'Discover the latest smartphones and accessories.',
+        //   },
+        // }
       ],
     },
     {
@@ -96,46 +74,23 @@ export function collectionsList() {
       parentCollectionId: undefined,
       featuredAssetId: undefined,
       translation: {
-        languageCode: 'en',
-        name: 'Exclusive Deals',
-        slug: 'exclusive-deals',
-        description: 'Unlock special offers and exclusive deals for members.',
-      },
-      childCollections: [],
-    },
-    {
-      isPrivate: false,
-      parentCollectionId: undefined,
-      featuredAssetId: undefined,
-      translation: {
-        languageCode: 'en',
-        name: 'Home and Living',
-        slug: 'home-and-living',
-        description: 'Find stylish and comfortable home decor and furnishings.',
+        languageCode: 'ar',
+        name: 'قسم كبار السن',
+        slug: 'كبار السن',
+        description: 'قسم كبار السن',
       },
       childCollections: [
-        {
-          isPrivate: false,
-          parentCollectionId: 8,
-          featuredAssetId: undefined,
-          translation: {
-            languageCode: 'en',
-            name: 'Bedroom Essentials',
-            slug: 'bedroom-essentials',
-            description: 'Create a cozy and inviting bedroom space.',
-          },
-        },
-        {
-          isPrivate: false,
-          parentCollectionId: 8,
-          featuredAssetId: undefined,
-          translation: {
-            languageCode: 'en',
-            name: 'Kitchen Gadgets',
-            slug: 'kitchen-gadgets',
-            description: 'Discover innovative kitchen gadgets and tools.',
-          },
-        },
+        // {
+        //   isPrivate: false,
+        //   parentCollectionId: 1,
+        //   featuredAssetId: undefined,
+        //   translation: {
+        //     languageCode: 'en',
+        //     name: 'Smartphones',
+        //     slug: 'smartphones',
+        //     description: 'Discover the latest smartphones and accessories.',
+        //   },
+        // }
       ],
     },
     {
@@ -143,35 +98,119 @@ export function collectionsList() {
       parentCollectionId: undefined,
       featuredAssetId: undefined,
       translation: {
-        languageCode: 'en',
-        name: 'Outdoor Gear',
-        slug: 'outdoor-gear',
-        description:
-          'Gear up for your outdoor adventures with top-quality equipment.',
+        languageCode: 'ar',
+        name: 'قسم الوجبات الصحية',
+        slug: 'الوجبان الصحية',
+        description: 'الوجبات الصحية',
       },
       childCollections: [
-        {
-          isPrivate: false,
-          parentCollectionId: 11,
-          featuredAssetId: undefined,
-          translation: {
-            languageCode: 'en',
-            name: 'Camping Essentials',
-            slug: 'camping-essentials',
-            description: 'Get ready for a camping trip with essential gear.',
-          },
-        },
-        {
-          isPrivate: false,
-          parentCollectionId: 11,
-          featuredAssetId: undefined,
-          translation: {
-            languageCode: 'en',
-            name: 'Hiking Gear',
-            slug: 'hiking-gear',
-            description: 'Explore durable and comfortable hiking gear.',
-          },
-        },
+        // {
+        //   isPrivate: false,
+        //   parentCollectionId: 1,
+        //   featuredAssetId: undefined,
+        //   translation: {
+        //     languageCode: 'en',
+        //     name: 'Smartphones',
+        //     slug: 'smartphones',
+        //     description: 'Discover the latest smartphones and accessories.',
+        //   },
+        // }
+      ],
+    },
+    {
+      isPrivate: false,
+      parentCollectionId: undefined,
+      featuredAssetId: undefined,
+      translation: {
+        languageCode: 'ar',
+        name: 'قسم ماتشتهر به المحافظات العراقية ',
+        slug: 'قسم ماتشتهر به المحافظات العراقية ',
+        description: 'قسم ماتشتهر به المحافظات العراقية',
+      },
+      childCollections: [
+        // {
+        //   isPrivate: false,
+        //   parentCollectionId: 1,
+        //   featuredAssetId: undefined,
+        //   translation: {
+        //     languageCode: 'en',
+        //     name: 'Smartphones',
+        //     slug: 'smartphones',
+        //     description: 'Discover the latest smartphones and accessories.',
+        //   },
+        // }
+      ],
+    },
+    {
+      isPrivate: false,
+      parentCollectionId: undefined,
+      featuredAssetId: undefined,
+      translation: {
+        languageCode: 'ar',
+        name: 'خدمات مختلفة',
+        slug: 'خدمات مختلفة',
+        description: 'خدمات مختلفة',
+      },
+      childCollections: [
+        // {
+        //   isPrivate: false,
+        //   parentCollectionId: 1,
+        //   featuredAssetId: undefined,
+        //   translation: {
+        //     languageCode: 'en',
+        //     name: 'Smartphones',
+        //     slug: 'smartphones',
+        //     description: 'Discover the latest smartphones and accessories.',
+        //   },
+        // }
+      ],
+    },
+    {
+      isPrivate: false,
+      parentCollectionId: undefined,
+      featuredAssetId: undefined,
+      translation: {
+        languageCode: 'ar',
+        name: 'قسم الحلويات و المعجنات',
+        slug: 'الحلويات',
+        description: 'الحلويات',
+      },
+      childCollections: [
+        // {
+        //   isPrivate: false,
+        //   parentCollectionId: 1,
+        //   featuredAssetId: undefined,
+        //   translation: {
+        //     languageCode: 'en',
+        //     name: 'Smartphones',
+        //     slug: 'smartphones',
+        //     description: 'Discover the latest smartphones and accessories.',
+        //   },
+        // }
+      ],
+    },
+    {
+      isPrivate: false,
+      parentCollectionId: undefined,
+      featuredAssetId: undefined,
+      translation: {
+        languageCode: 'ar',
+        name: 'قسم التحفيات والانتيكات',
+        slug: 'التحفيات والانتيكات',
+        description: 'التحفيات والانتيكات',
+      },
+      childCollections: [
+        // {
+        //   isPrivate: false,
+        //   parentCollectionId: 1,
+        //   featuredAssetId: undefined,
+        //   translation: {
+        //     languageCode: 'en',
+        //     name: 'Smartphones',
+        //     slug: 'smartphones',
+        //     description: 'Discover the latest smartphones and accessories.',
+        //   },
+        // }
       ],
     },
   ];

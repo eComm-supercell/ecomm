@@ -95,14 +95,14 @@ model user_roles_role {
 model asset {
   createdAt            DateTime                @default(now()) @db.Timestamp(6)
   updatedAt            DateTime                @default(now()) @db.Timestamp(6)
-  name                 String                  @db.VarChar
-  type                 String                  @db.VarChar
-  mimeType             String                  @db.VarChar
-  width                Int                     @default(0)
-  height               Int                     @default(0)
-  fileSize             Int
+  name                 String?                 @db.VarChar
+  type                 AssetType?
+  mimeType             String?                 @db.VarChar
+  width                Int?                    @default(0)
+  height               Int?                    @default(0)
+  fileSize             Int?
   source               String                  @db.VarChar
-  preview              String                  @db.VarChar
+  preview              String?                 @db.VarChar
   id                   Int                     @id @default(autoincrement())
   collection           collection[]
   products             product[]
@@ -459,4 +459,18 @@ enum DeviceLayout {
   mobile
   desktop
   tablet
+}
+
+enum AssetType {
+  IMAGE
+  VIDEO
+  AUDIO
+  DOCUMENT
+  ARCHIVE
+  CODE
+  TEXT
+  PDF
+  SPREADSHEET
+  PRESENTATION
+  FONT
 }

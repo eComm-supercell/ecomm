@@ -11,4 +11,12 @@ export class ServiceNamesService {
       label: 'AUTHENTICATION',
     };
   }
+
+  connectToAssetsService() {
+    return {
+      name: this.config.get('ASSETS_SERVICE_NAME'),
+      port: this.config.get('ASSETS_PORT'),
+      label: 'ASSETS',
+    };
+  }
 }
