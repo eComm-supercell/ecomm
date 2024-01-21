@@ -5,6 +5,8 @@ COPY package.json .
 COPY yarn.lock .
 RUN yarn install
 COPY . .
+RUN yarn global add dotenv-cli 
+RUN dotenv -e .env.prod -- npx prisma generate
 RUN yarn build common
 RUN yarn build assets
 
