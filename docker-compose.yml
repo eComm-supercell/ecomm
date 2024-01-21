@@ -37,8 +37,6 @@ services:
     depends_on:
       - minio
       - postgres
-      - redis
-      - meilisearch
     networks:
       - web
   shops:
@@ -62,28 +60,6 @@ services:
       - assets
     networks:
       - web
-  # platform:
-  #   container_name: platform
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile.platform
-  #     target: build
-  #   restart: on-failure
-  #   ports:
-  #     - 3000:3000
-  #   volumes:
-  #     - .:/app
-  #     - exclude:/app/node_modules/
-  #   command: bash -c "dotenv -e .env.prod -- npx prisma migrate deploy
-  #     && dotenv -e .env.prod -- npx prisma db seed && npm run start:prod:platform"
-
-  #   depends_on:
-  #     - postgres
-  #     - redis
-  #     - meilisearch
-  #     - auth
-  #   networks:
-  #     - web
   admins:
     container_name: admins
     build:
@@ -122,6 +98,8 @@ services:
     command: --port 6378
     networks:
       - web
+    depends_on:
+      - postgres
   meilisearch:
     image: getmeili/meilisearch:v1.2
     container_name: meilisearch
@@ -140,6 +118,9 @@ services:
     volumes:
       - ./data.ms:/data.ms
     restart: always
+    depends_on:
+      - postgres
+      - redis
   minio:
     image: quay.io/minio/minio:RELEASE.2023-11-01T01-57-10Z-cpuv1
     container_name: minio
@@ -157,6 +138,9 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    depends_on:
+      - postgres
+      - redis
 networks:
   web:
 volumes:
