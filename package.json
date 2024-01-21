@@ -21,6 +21,7 @@
     "start:prod:shops": "NODE_ENV=production node dist/apps/shops/main",
     "start:prod:admins": "NODE_ENV=production node dist/apps/admins/main",
     "start:prod:auth": "NODE_ENV=production node dist/apps/authentication/main",
+    "start:prod:assets": "NODE_ENV=production node dist/apps/assets/main",
     "start:c": "nest start shops",
     "start:c:dev": "NODE_ENV=development nest start shops --watch",
     "start:c:debug": "NODE_ENV=development nest start shops --debug --watch",
