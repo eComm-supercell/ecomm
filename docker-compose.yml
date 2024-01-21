@@ -18,6 +18,22 @@ services:
       - postgres
       - redis
       - meilisearch
+      - assets
+    networks:
+      - web
+  assets:
+    container_name: assets
+    build:
+      context: .
+      dockerfile: Dockerfile.assets
+      target: build
+    restart: on-failure
+    ports:
+      - 5000:5000
+    volumes:
+      - .:/app
+      - exclude:/app/node_modules/
+    command: bash -c "npm run start:prod:assets"
     networks:
       - web
   shops:
@@ -38,6 +54,7 @@ services:
       - redis
       - meilisearch
       - auth
+      - assets
     networks:
       - web
   # platform:
@@ -80,6 +97,7 @@ services:
       - redis
       - meilisearch
       - auth
+      - assets
     networks:
       - web
   postgres:
