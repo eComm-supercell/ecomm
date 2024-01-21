@@ -30,27 +30,27 @@ export interface IFace {
 @Injectable()
 export class SeedService {
   constructor(private readonly prisma: PrismaService) {}
-  fakeasset(n: number) {
-    const list: any[] = [];
-    for (let index = 0; index < n; index++) {
-      list.push({
-        name: faker.commerce.productName(),
-        type: 'image',
-        mimeType: faker.helpers.arrayElement([
-          'image/jpeg',
-          'image/png',
-          'image/gif',
-          'icon/svg+xml',
-        ] as const),
-        fileSize: 500,
-        width: 200,
-        height: 200,
-        source: faker.image.url({ width: 200, height: 200 }),
-        preview: faker.image.url({ width: 200, height: 200 }),
-      });
-    }
-    return list;
-  }
+  // fakeasset(n: number) {
+  //   const list: any[] = [];
+  //   for (let index = 0; index < n; index++) {
+  //     list.push({
+  //       name: faker.commerce.productName(),
+  //       type: 'image',
+  //       mimeType: faker.helpers.arrayElement([
+  //         'image/jpeg',
+  //         'image/png',
+  //         'image/gif',
+  //         'icon/svg+xml',
+  //       ] as const),
+  //       fileSize: 500,
+  //       width: 200,
+  //       height: 200,
+  //       source: faker.image.url({ width: 200, height: 200 }),
+  //       preview: faker.image.url({ width: 200, height: 200 }),
+  //     });
+  //   }
+  //   return list;
+  // }
 
   collectionsList() {
     const collections = [
@@ -418,21 +418,21 @@ export class SeedService {
             },
           })),
         },
-        productAssets: {
-          create: productAssetsIds.map((assetId) => ({
-            asset: {
-              connect: {
-                id: assetId,
-              },
-            },
-            position: faker.number.int({ min: 1, max: 10 }),
-          })),
-        },
-        asset: {
-          connect: {
-            id: productAssetsIds[0],
-          },
-        },
+        // productAssets: {
+        //   create: productAssetsIds.map((assetId) => ({
+        //     asset: {
+        //       connect: {
+        //         id: assetId,
+        //       },
+        //     },
+        //     position: faker.number.int({ min: 1, max: 10 }),
+        //   })),
+        // },
+        // asset: {
+        //   connect: {
+        //     id: productAssetsIds[0],
+        //   },
+        // },
       },
       select: { id: true },
     });
@@ -676,17 +676,17 @@ export class SeedService {
     console.log('SEED: starting seed from AUTH service main.ts file');
 
     // Create assets if not exist
-    const assetsCount = await this.prisma.asset.count();
-    if (assetsCount === 0) {
-      console.log('Creating assets...');
+    // const assetsCount = await this.prisma.asset.count();
+    // if (assetsCount === 0) {
+    //   console.log('Creating assets...');
 
-      await this.prisma.asset.createMany({
-        data: this.fakeasset(100).map((asset) => ({
-          ...asset,
-        })),
-      });
-      console.log('Assets created');
-    }
+    //   await this.prisma.asset.createMany({
+    //     data: this.fakeasset(100).map((asset) => ({
+    //       ...asset,
+    //     })),
+    //   });
+    //   console.log('Assets created');
+    // }
 
     // create facets
     const facetsCount = await this.prisma.facet.count();
@@ -739,46 +739,46 @@ export class SeedService {
               connect: { id: rootTransId.id },
             },
             isPrivate,
-            asset: {
-              connect: {
-                id: faker.number.int({ min: 1, max: 100 }), // random asset id 1-100
-              },
-            },
+            // asset: {
+            //   connect: {
+            //     id: faker.number.int({ min: 1, max: 100 }), // random asset id 1-100
+            //   },
+            // },
           },
         });
 
         if (childCollections.length === 0) return;
-        childCollections.forEach(async (childCollection) => {
-          const { translation: childTranslation, isPrivate: childIsPrivate } =
-            childCollection;
-          const childTransId = await this.prisma.collection_translation.create({
-            data: {
-              description: childTranslation.description,
-              languageCode: childTranslation.languageCode as LanguageCode,
-              name: childTranslation.name,
-              slug: childTranslation.slug,
-            },
-            select: { id: true },
-          });
-          await this.prisma.collection.create({
-            data: {
-              isPrivate: childIsPrivate,
-              collection_translation: {
-                connect: { id: childTransId.id },
-              },
-              parentCollection: {
-                connect: {
-                  id: parentCollection.id,
-                },
-              },
-              asset: {
-                connect: {
-                  id: faker.number.int({ min: 1, max: 100 }), // random asset id 1-100
-                },
-              },
-            },
-          });
-        });
+        // childCollections.forEach(async (childCollection) => {
+        //   const { translation: childTranslation, isPrivate: childIsPrivate } =
+        //     childCollection;
+        //   const childTransId = await this.prisma.collection_translation.create({
+        //     data: {
+        //       description: childTranslation.description,
+        //       languageCode: childTranslation.languageCode as LanguageCode,
+        //       name: childTranslation.name,
+        //       slug: childTranslation.slug,
+        //     },
+        //     select: { id: true },
+        //   });
+        //   await this.prisma.collection.create({
+        //     data: {
+        //       isPrivate: childIsPrivate,
+        //       collection_translation: {
+        //         connect: { id: childTransId.id },
+        //       },
+        //       parentCollection: {
+        //         connect: {
+        //           id: parentCollection.id,
+        //         },
+        //       },
+        //       asset: {
+        //         connect: {
+        //           id: faker.number.int({ min: 1, max: 100 }), // random asset id 1-100
+        //         },
+        //       },
+        //     },
+        //   });
+        // });
       });
       console.log('Collections created');
     }
@@ -804,7 +804,6 @@ export class SeedService {
     console.info('Cleaned database successfully');
     await prisma.$disconnect();
   }
-
   async getTables(prisma: PrismaClient): Promise<string[]> {
     const results: Array<{
       tablename: string;

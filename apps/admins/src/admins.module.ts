@@ -6,6 +6,7 @@ import { CollectionsModule } from './collections/collections.module';
 import { CollectionTranslationModule } from './collection-translation/collection-translation.module';
 import { ProductsModule } from './products/products.module';
 import { FacetsModule } from './facets/facets.module';
+import { AssetsModule } from './assets/assets.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { FacetsModule } from './facets/facets.module';
     CollectionTranslationModule,
     ProductsModule,
     FacetsModule,
+    AssetsModule,
   ],
 })
 export class AdminsModule {}

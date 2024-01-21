@@ -144,10 +144,10 @@ export async function createProduct(
     productVariants,
   } = body;
 
-  const productAssetsIds = [
-    faker.number.int({ min: 1, max: 99 }),
-    faker.number.int({ min: 1, max: 99 }),
-  ];
+  // const productAssetsIds = [
+  //   faker.number.int({ min: 1, max: 99 }),
+  //   faker.number.int({ min: 1, max: 99 }),
+  // ];
 
   const productVariantsAssetsIds = [
     faker.number.int({ min: 1, max: 99 }),
@@ -175,21 +175,21 @@ export async function createProduct(
           },
         })),
       },
-      productAssets: {
-        create: productAssetsIds.map((assetId) => ({
-          asset: {
-            connect: {
-              id: assetId,
-            },
-          },
-          position: faker.number.int({ min: 1, max: 10 }),
-        })),
-      },
-      asset: {
-        connect: {
-          id: productAssetsIds[0],
-        },
-      },
+      // productAssets: {
+      //   create: productAssetsIds.map((assetId) => ({
+      //     asset: {
+      //       connect: {
+      //         id: assetId,
+      //       },
+      //     },
+      //     position: faker.number.int({ min: 1, max: 10 }),
+      //   })),
+      // },
+      // asset: {
+      //   connect: {
+      //     id: productAssetsIds[0],
+      //   },
+      // },
     },
     select: { id: true },
   });

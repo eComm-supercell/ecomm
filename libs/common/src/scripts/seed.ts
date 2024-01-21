@@ -3,9 +3,9 @@ import { LanguageCode, PrismaClient } from '@prisma/client';
 import {
   collectionsList,
   generateFacets,
-  fakeasset,
+  // fakeasset,
 } from '../scripts/seed-scripts/admin';
-import { faker } from '@faker-js/faker';
+// import { faker } from '@faker-js/faker';
 import { createProductsBulk } from './seed-scripts/create-product';
 
 if (require.main === module) {
@@ -27,17 +27,17 @@ async function seed() {
   const client = new PrismaClient();
 
   // Create assets if not exist
-  const assetsCount = await client.asset.count();
-  if (assetsCount === 0) {
-    console.log('Creating assets...');
+  // const assetsCount = await client.asset.count();
+  // if (assetsCount === 0) {
+  //   console.log('Creating assets...');
 
-    await client.asset.createMany({
-      data: fakeasset(100).map((asset) => ({
-        ...asset,
-      })),
-    });
-    console.log('Assets created');
-  }
+  //   await client.asset.createMany({
+  //     data: fakeasset(100).map((asset) => ({
+  //       ...asset,
+  //     })),
+  //   });
+  //   console.log('Assets created');
+  // }
 
   // create facets
   const facetsCount = await client.facet.count();
@@ -68,6 +68,7 @@ async function seed() {
     });
     console.log('Facets created');
   }
+
   // create collections
   const collectionCount = await client.collection.count();
   if (collectionCount === 0) {
@@ -89,46 +90,46 @@ async function seed() {
             connect: { id: rootTransId.id },
           },
           isPrivate,
-          asset: {
-            connect: {
-              id: faker.number.int({ min: 1, max: 100 }), // random asset id 1-100
-            },
-          },
+          // asset: {
+          //   connect: {
+          //     id: faker.number.int({ min: 1, max: 100 }), // random asset id 1-100
+          //   },
+          // },
         },
       });
 
       if (childCollections.length === 0) return;
-      childCollections.forEach(async (childCollection) => {
-        const { translation: childTranslation, isPrivate: childIsPrivate } =
-          childCollection;
-        const childTransId = await client.collection_translation.create({
-          data: {
-            description: childTranslation.description,
-            languageCode: childTranslation.languageCode as LanguageCode,
-            name: childTranslation.name,
-            slug: childTranslation.slug,
-          },
-          select: { id: true },
-        });
-        await client.collection.create({
-          data: {
-            isPrivate: childIsPrivate,
-            collection_translation: {
-              connect: { id: childTransId.id },
-            },
-            parentCollection: {
-              connect: {
-                id: parentCollection.id,
-              },
-            },
-            asset: {
-              connect: {
-                id: faker.number.int({ min: 1, max: 100 }), // random asset id 1-100
-              },
-            },
-          },
-        });
-      });
+      // childCollections.forEach(async (childCollection) => {
+      //   const { translation: childTranslation, isPrivate: childIsPrivate } =
+      //     childCollection;
+      //   const childTransId = await client.collection_translation.create({
+      //     data: {
+      //       description: childTranslation.description,
+      //       languageCode: childTranslation.languageCode as LanguageCode,
+      //       name: childTranslation.name,
+      //       slug: childTranslation.slug,
+      //     },
+      //     select: { id: true },
+      //   });
+      //   await client.collection.create({
+      //     data: {
+      //       isPrivate: childIsPrivate,
+      //       collection_translation: {
+      //         connect: { id: childTransId.id },
+      //       },
+      //       parentCollection: {
+      //         connect: {
+      //           id: parentCollection.id,
+      //         },
+      //       },
+      //       asset: {
+      //         connect: {
+      //           id: faker.number.int({ min: 1, max: 100 }), // random asset id 1-100
+      //         },
+      //       },
+      //     },
+      //   });
+      // });
     });
     console.log('Collections created');
   }

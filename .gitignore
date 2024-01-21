@@ -42,3 +42,7 @@ lerna-debug.log*
 /data
 .vscode/settings.json
 .env
+
+
+# Minio
+/minio-data
