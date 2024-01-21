@@ -18,7 +18,7 @@ services:
       - postgres
       - redis
       - meilisearch
-      - assets
+      - minio
     networks:
       - web
   assets:
@@ -33,7 +33,12 @@ services:
     volumes:
       - .:/app
       - exclude:/app/node_modules/
-    command: bash -c "npm run start:prod:assets"
+    command: npm run start:prod:assets
+    depends_on:
+      - minio
+      - postgres
+      - redis
+      - meilisearch
     networks:
       - web
   shops:
