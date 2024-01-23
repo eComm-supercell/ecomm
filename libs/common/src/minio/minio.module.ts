@@ -10,11 +10,11 @@ import { MinioService } from './minio.service';
       provide: 'MINIO',
       useFactory: () => {
         const minioClient = new Minio.Client({
-          endPoint: 'minio.digital-logic.tech',
-          port: 9999,
+          endPoint: 'assets.super-cell-dev.org',
+          port: 9000,
           useSSL: true,
-          accessKey: '0aXhwvCKVWbx6bV2ka8a',
-          secretKey: 's9HtSP2mltEZGh7LZxBcibCpdL2IEZLyUMEEvjjy',
+          accessKey: '7NB0jzUvDn9tUIq6E4PV',
+          secretKey: '6HtLK1MvUINJ2zXGSXOabfUAK5Hn0OxveSgbyjV4',
         });
 
         return minioClient;
