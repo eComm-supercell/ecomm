@@ -12,7 +12,7 @@ import { MinioService } from './minio.service';
         const minioClient = new Minio.Client({
           endPoint: 'minio.digital-logic.tech',
           port: 9999,
-          useSSL: false,
+          useSSL: true,
           accessKey: '0aXhwvCKVWbx6bV2ka8a',
           secretKey: 's9HtSP2mltEZGh7LZxBcibCpdL2IEZLyUMEEvjjy',
         });
