@@ -1,45 +1,45 @@
 version: '3'
 services:
-  auth:
-    container_name: auth
-    build:
-      context: .
-      dockerfile: Dockerfile.auth
-      target: build
-    restart: on-failure
-    ports:
-      - 4000:4000
-    volumes:
-      - .:/app
-      - exclude:/app/node_modules/
-    command: bash -c "dotenv -e .env.prod -- npx prisma migrate deploy && npm run start:prod:auth"
+  # auth:
+  #   container_name: auth
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile.auth
+  #     target: build
+  #   restart: on-failure
+  #   ports:
+  #     - 4000:4000
+  #   volumes:
+  #     - .:/app
+  #     - exclude:/app/node_modules/
+  #   command: bash -c "dotenv -e .env.prod -- npx prisma migrate deploy && npm run start:prod:auth"
 
-    depends_on:
-      - postgres
-      - redis
-      - meilisearch
-    networks:
-      - web
-  shops:
-    container_name: shops
-    build:
-      context: .
-      dockerfile: Dockerfile.shops
-      target: production
-    restart: on-failure
-    ports:
-      - 3001:3001
-    volumes:
-      - .:/app
-      - exclude:/app/node_modules/
-    command: npm run start:prod:shops
-    depends_on:
-      - postgres
-      - redis
-      - meilisearch
-      - auth
-    networks:
-      - web
+  #   depends_on:
+  #     - postgres
+  #     - redis
+  #     - meilisearch
+  #   networks:
+  #     - web
+  # shops:
+  #   container_name: shops
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile.shops
+  #     target: production
+  #   restart: on-failure
+  #   ports:
+  #     - 3001:3001
+  #   volumes:
+  #     - .:/app
+  #     - exclude:/app/node_modules/
+  #   command: npm run start:prod:shops
+  #   depends_on:
+  #     - postgres
+  #     - redis
+  #     - meilisearch
+  #     - auth
+  #   networks:
+  #     - web
   admins:
     container_name: admins
     build:
@@ -57,7 +57,7 @@ services:
       - postgres
       - redis
       - meilisearch
-      - auth
+      # - auth
     networks:
       - web
   postgres:
