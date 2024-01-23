@@ -101,27 +101,6 @@ services:
     depends_on:
       - postgres
       - redis
-  minio:
-    image: quay.io/minio/minio:RELEASE.2023-11-01T01-57-10Z-cpuv1
-    container_name: minio
-    hostname: minio
-    command: server --console-address ":9001" /data
-    ports:
-      - 9001:9001
-      - 9000:9000
-    environment:
-      MINIO_ROOT_USER: minioadmin
-      MINIO_ROOT_PASSWORD: minioadmin
-    volumes:
-      - ./minio-data:/data
-    healthcheck:
-      test: ['CMD', 'mc', 'ready', 'local']
-      interval: 5s
-      timeout: 5s
-      retries: 5
-    depends_on:
-      - postgres
-      - redis
 networks:
   web:
 volumes:
