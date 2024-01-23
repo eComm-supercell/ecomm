@@ -12,7 +12,7 @@ services:
 
     restart: always
   minio:
-    image: quay.io/minio/minio:RELEASE.2024-01-16T16-07-38Z
+    image: quay.io/minio/minio:RELEASE.2023-11-01T01-57-10Z-cpuv1
     container_name: minio
     command: server --console-address ":9001" /data
     ports:

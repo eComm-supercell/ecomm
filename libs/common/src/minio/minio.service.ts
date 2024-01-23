@@ -6,8 +6,8 @@ import { from } from 'rxjs';
 export class MinioService {
   constructor(@Inject('MINIO') private readonly minioClient: Minio.Client) {}
 
-  async upload(object: any) {
-    const { originalname } = object.file;
+  async upload(file: any) {
+    const { originalname } = file;
 
     const bucketName = 'ecomm-assets';
     const objectName = `${bucketName}/${originalname}`;
@@ -15,7 +15,7 @@ export class MinioService {
     await this.minioClient.putObject(
       bucketName,
       objectName,
-      Buffer.from(object.file.buffer, 'binary'),
+      Buffer.from(file.buffer, 'binary'),
     );
 
     const url = await this.minioClient.presignedUrl(
@@ -27,9 +27,9 @@ export class MinioService {
     return {
       source: url,
       name: objectName,
-      mimetype: object.file.mimetype,
-      fileSize: object.file.size,
-      type: object.file.mimetype.split('/')[0],
+      mimetype: file.mimetype,
+      fileSize: file.size,
+      type: file.mimetype.split('/')[0],
       bucketName,
     };
   }
