@@ -1,31 +1,21 @@
-import { handleMicroserviceExceptions } from '@libs/common/src/utils/microservicesExceptionHandler';
-import { Inject, Injectable } from '@nestjs/common';
-import { ClientProxy } from '@nestjs/microservices';
-import { lastValueFrom } from 'rxjs';
+import { Injectable } from '@nestjs/common';
 import { SaveAssetDto } from './dto/save.dto';
 import { PrismaService } from '@libs/common/src/prisma/prisma.service';
+import { MinioService } from '@libs/common/src/minio/minio.service';
 
 @Injectable()
 export class AssetsService {
   constructor(
-    @Inject('ASSETS') private clientAssets: ClientProxy,
     private readonly prisma: PrismaService,
+    private readonly minio: MinioService,
   ) {}
 
   async upload(file: Express.Multer.File) {
-    return await lastValueFrom(
-      this.clientAssets
-        .send({ cmd: 'upload' }, { file })
-        .pipe(handleMicroserviceExceptions()),
-    );
+    return await this.minio.upload(file);
   }
 
   listObjetsOfBucket(bucketName: string) {
-    return lastValueFrom(
-      this.clientAssets
-        .send({ cmd: 'list-objects-of-bucket' }, { bucketName })
-        .pipe(handleMicroserviceExceptions()),
-    );
+    return this.minio.listAssetsOfBucket(bucketName);
   }
 
   async save(body: SaveAssetDto) {

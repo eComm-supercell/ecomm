@@ -8,10 +8,7 @@
       {
         "name": "@nestjs/swagger",
         "options": {
-          "dtoFileNameSuffix": [
-            ".dto.ts",
-            ".entity.ts"
-          ],
+          "dtoFileNameSuffix": [".dto.ts", ".entity.ts"],
           "controllerFileNameSuffix": ".controller.ts",
           "classValidatorShim": true,
           "dtoKeyOfComment": "description",
@@ -67,15 +64,6 @@
       "sourceRoot": "apps/admins/src",
       "compilerOptions": {
         "tsConfigPath": "apps/admins/tsconfig.app.json"
-      }
-    },
-    "assets": {
-      "type": "application",
-      "root": "apps/assets",
-      "entryFile": "main",
-      "sourceRoot": "apps/assets/src",
-      "compilerOptions": {
-        "tsConfigPath": "apps/assets/tsconfig.app.json"
       }
     }
   },

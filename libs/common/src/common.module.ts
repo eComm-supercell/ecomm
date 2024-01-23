@@ -6,6 +6,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { SharedAuthModule } from './auth/sharedAuth.module';
 import { AbilityModule } from './ability/ability.module';
 import { ServiceNamesModule } from './service-names/service-names.module';
+import { MinioModule } from './minio/minio.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { ServiceNamesModule } from './service-names/service-names.module';
     SharedAuthModule,
     AbilityModule,
     ServiceNamesModule,
+    MinioModule,
   ],
   providers: [CommonService],
   exports: [CommonService],

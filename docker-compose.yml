@@ -21,24 +21,6 @@ services:
       - minio
     networks:
       - web
-  assets:
-    container_name: assets
-    build:
-      context: .
-      dockerfile: Dockerfile.assets
-      target: build
-    restart: on-failure
-    ports:
-      - 5000:5000
-    volumes:
-      - .:/app
-      - exclude:/app/node_modules/
-    command: npm run start:prod:assets
-    depends_on:
-      - minio
-      - postgres
-    networks:
-      - web
   shops:
     container_name: shops
     build:
@@ -57,7 +39,6 @@ services:
       - redis
       - meilisearch
       - auth
-      - assets
     networks:
       - web
   admins:
@@ -78,7 +59,6 @@ services:
       - redis
       - meilisearch
       - auth
-      - assets
     networks:
       - web
   postgres:
