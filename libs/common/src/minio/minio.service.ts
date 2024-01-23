@@ -9,7 +9,7 @@ export class MinioService {
   async upload(file: any) {
     const { originalname } = file;
 
-    const bucketName = 'ecomm-assets';
+    const bucketName = 'a.jasim';
     const objectName = `${bucketName}/${originalname}`;
 
     await this.minioClient.putObject(
