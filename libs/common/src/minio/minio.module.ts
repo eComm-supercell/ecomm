@@ -10,8 +10,8 @@ import { MinioService } from './minio.service';
       provide: 'MINIO',
       useFactory: () => {
         const minioClient = new Minio.Client({
-          endPoint: process.env.MINIO_ENDPOINT as string,
-          port: parseInt(process.env.MINIO_PORT as string),
+          endPoint: '82.129.21.154',
+          port: 9000,
           useSSL: false,
           accessKey: process.env.MINIO_ACCESS_KEY as string,
           secretKey: process.env.MINIO_SECRET_KEY as string,
