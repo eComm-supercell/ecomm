@@ -10,7 +10,7 @@ import { MinioService } from './minio.service';
       provide: 'MINIO',
       useFactory: () => {
         const minioClient = new Minio.Client({
-          endPoint: '82.129.21.154',
+          endPoint: 'assets.super-cell-dev.org',
           port: 9000,
           useSSL: true,
           accessKey: '7NB0jzUvDn9tUIq6E4PV',
